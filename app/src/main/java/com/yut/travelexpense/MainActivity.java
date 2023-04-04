@@ -26,6 +26,9 @@ import java.util.Objects;
 // intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 //TODO: passing data across activities
 // putExtra(Parcelable)
+
+// Token: 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
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
