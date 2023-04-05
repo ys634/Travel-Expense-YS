@@ -78,7 +78,7 @@ public class TripListActivity extends AppCompatActivity implements TripsApi {
     }
 
     @Override
-    public void callBack() {
+    public void callBackTrips() {
         trips = Utils.getInstance(TripListActivity.this).getAllTrips();
 
         TripsRecViewAdapter adapter = new TripsRecViewAdapter(this, trips);

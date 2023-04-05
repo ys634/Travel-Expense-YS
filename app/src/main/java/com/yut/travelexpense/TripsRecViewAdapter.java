@@ -6,29 +6,19 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapter.MyViewHolder> {
 
@@ -108,7 +98,7 @@ public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapte
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Utils.getInstance(context).removeTrip(tripSelected);
-                        tripsApi.callBack();
+                        tripsApi.callBackTrips();
                         notifyItemRemoved(holder.getAdapterPosition());
                         notifyItemRangeChanged(holder.getAdapterPosition(), getItemCount());
 

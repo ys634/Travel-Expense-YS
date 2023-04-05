@@ -1,9 +1,9 @@
 package com.yut.travelexpense;
 
 import static com.yut.travelexpense.MainActivity.formatter;
+import static com.yut.travelexpense.MainActivity.round;
 import static com.yut.travelexpense.MainActivity.today;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -13,10 +13,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
@@ -32,10 +30,17 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+import com.yut.travelexpense.CurrencyConversion.RetrofitBuilder;
+import com.yut.travelexpense.CurrencyConversion.RetrofitInterface;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class EntryFragment extends Fragment {
@@ -137,9 +142,16 @@ public class EntryFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Transaction incomingTransaction = bundle.getParcelable("transaction");
 
+                        //TODO: create a callback so that the recview is updated
+
+
                         Utils.getInstance(getContext()).removeTransaction(incomingTransaction);
                         FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.frameOriginal, new TransactionListFragment());
+                        Bundle bundle = new Bundle();
+                        bundle.putString("src", "entry");
+                        TransactionListFragment fragment = new TransactionListFragment();
+                        fragment.setArguments(bundle);
+                        fragmentTransaction.replace(R.id.frameOriginal, fragment);
                         fragmentTransaction.commit();
                     }
                 });
@@ -294,20 +306,8 @@ public class EntryFragment extends Fragment {
                         //TODO: Show error
 
                     } else {
-                        Transaction newTransaction = createTransaction(entryDate, rdbId);
 
-                        if (action.equals("edit")) {
-
-                            Transaction incomingTransaction = bundle.getParcelable("transaction");
-
-                            Utils.getInstance(view.getContext()).removeTransaction(incomingTransaction);
-                            Toast.makeText(getContext(), "Transaction edited. ID: " + newTransaction.getId(), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getContext(), "Transaction entered. ID: " + newTransaction.getId(), Toast.LENGTH_SHORT).show();
-                        }
-                        Utils.getInstance(view.getContext()).addTransaction(newTransaction);
-                        edtTxtAmount.getText().clear();
-                        edtTxtDescription.getText().clear();
+                        createTransaction(entryDate, rdbId);
 
                         Bundle bundle = new Bundle();
                         bundle.putString("src", "entry");
@@ -352,7 +352,7 @@ public class EntryFragment extends Fragment {
 
     }
 
-    public Transaction createTransaction (LocalDate date, int rdbId) {
+    public void createTransaction (LocalDate date, int rdbId) {
 
         int lastId = Utils.getInstance(getContext()).getLastTransactionID();
 
@@ -362,19 +362,53 @@ public class EntryFragment extends Fragment {
             amount = "0.00";
         }
 
+        RetrofitInterface retrofitInterface = RetrofitBuilder.getRetrofitInstance().create(RetrofitInterface.class);
 
-        Transaction newTransaction = new Transaction(Double.parseDouble(amount),
-                Double.parseDouble(amount),
-                btnUnit.getText().toString(),
-                categoryFragment.getSelectedCategory(rdbId),
-                edtTxtDescription.getText().toString(),
-                txtCountry.getText().toString(),
-                date,
-                lastId + 1);
 
-        Utils.getInstance(getContext()).setLastTransactionID(lastId + 1);
+        // TODO: change USD to home currency
+        Call<JsonObject> call = retrofitInterface.getExchangeRate("USD");
 
-        return newTransaction;
+
+        double finalAmount = Double.parseDouble(amount);
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                JsonObject results = response.body();
+                JsonObject rates = results.getAsJsonObject("conversion_rates");
+                double multiplier = Double.parseDouble(rates.get(btnUnit.getText().toString()).toString());
+
+                Transaction newTransaction = new Transaction(finalAmount,
+                        round(finalAmount / multiplier, 2),
+                        btnUnit.getText().toString(),
+                        categoryFragment.getSelectedCategory(rdbId),
+                        edtTxtDescription.getText().toString(),
+                        txtCountry.getText().toString(),
+                        date,
+                        lastId + 1);
+
+                Utils.getInstance(getContext()).setLastTransactionID(lastId + 1);
+
+                if (action.equals("edit")) {
+
+                    Transaction incomingTransaction = bundle.getParcelable("transaction");
+
+                    Utils.getInstance(view.getContext()).removeTransaction(incomingTransaction);
+                    Toast.makeText(view.getContext(), "Transaction edited. ID: " + newTransaction.getId(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(view.getContext(), "Transaction entered. ID: " + newTransaction.getId(), Toast.LENGTH_SHORT).show();
+                }
+                Utils.getInstance(view.getContext()).addTransaction(newTransaction);
+                edtTxtAmount.getText().clear();
+                edtTxtDescription.getText().clear();
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
+
+
 
     }
 }

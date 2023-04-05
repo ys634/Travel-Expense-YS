@@ -10,9 +10,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+import com.yut.travelexpense.CurrencyConversion.RetrofitBuilder;
+import com.yut.travelexpense.CurrencyConversion.RetrofitInterface;
 import com.yut.travelexpense.databinding.ActivityMainBinding;
 
 import java.math.BigDecimal;
@@ -20,6 +21,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 //TODO: set flags
@@ -147,6 +152,34 @@ public class MainActivity extends AppCompatActivity {
         return bd.doubleValue();
     }
 
+
+//    public static double convertUnit() {
+//
+//        double multiplier;
+//        RetrofitInterface retrofitInterface = RetrofitBuilder.getRetrofitInstance().create(RetrofitInterface.class);
+//
+//
+//        // TODO: change USD to home currency
+//        Call<JsonObject> call = retrofitInterface.getExchangeRate("USD");
+//
+//
+//        call.enqueue(new Callback<JsonObject>() {
+//            @Override
+//            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+//                JsonObject results = response.body();
+//                JsonObject rates = results.getAsJsonObject("rates");
+//                double multiplier = Double.parseDouble(rates.get("CRC").toString());
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<JsonObject> call, Throwable t) {
+//
+//            }
+//        });
+//
+//        return multiplier;
+//    }
 
 
 }
