@@ -11,39 +11,12 @@
         android:id="@+id/toolbar"/>
 
 
-    <EditText
-        android:id="@+id/edtTxtTripName"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:ems="10"
-        android:inputType="text"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtStartDate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.64"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/edtTxtBudget"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:ems="10"
-        android:inputType="numberDecimal"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnAddTrip"
-        app:layout_constraintStart_toStartOf="@+id/txtEndDate" />
-
-    <Button
-        android:id="@+id/btnAddTrip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:text="ADD TRIP"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="50dp" />
 
     <TextView
         android:id="@+id/textView1"
@@ -82,6 +55,28 @@
         app:layout_constraintStart_toStartOf="@+id/guideline8" />
 
     <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Budget"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/edtTxtBudget"
+        app:layout_constraintStart_toStartOf="@+id/guideline8" />
+
+    <EditText
+        android:id="@+id/edtTxtTripName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:ems="10"
+        android:inputType="text"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/txtStartDate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.64"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
         android:id="@+id/txtStartDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -107,32 +102,37 @@
         app:layout_constraintBottom_toTopOf="@+id/txtHomeCurrency"
         app:layout_constraintStart_toStartOf="@+id/edtTxtTripName" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline8"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="50dp" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Budget"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/edtTxtBudget"
-        app:layout_constraintStart_toStartOf="@+id/guideline8" />
-
     <TextView
         android:id="@+id/txtHomeCurrency"
         android:layout_width="200dp"
         android:layout_height="40dp"
         android:layout_marginBottom="32dp"
         android:gravity="bottom"
-        android:text="USD"
+        android:text="Select a currency"
         android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/edtTxtBudget"
         app:layout_constraintStart_toStartOf="@+id/txtEndDate" />
+
+    <EditText
+        android:id="@+id/edtTxtBudget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:ems="10"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnAddTrip"
+        app:layout_constraintStart_toStartOf="@+id/txtEndDate" />
+
+    <Button
+        android:id="@+id/btnAddTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:text="ADD TRIP"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/txtTripNameWarning"
@@ -158,6 +158,7 @@
 
     <include
         layout="@layout/home_button"
-        />
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

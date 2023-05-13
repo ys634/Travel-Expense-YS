@@ -45,8 +45,7 @@ public class TransactionRecViewAdapter extends RecyclerView.Adapter<TransactionR
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
         Transaction transactionSelected = transactions.get(position);
-        //TODO: Update convertedAmount and image
-        Double convertedAmount = 0.00;
+
         int image = 0;
 
         switch (transactionSelected.getCategory()) {
@@ -78,11 +77,15 @@ public class TransactionRecViewAdapter extends RecyclerView.Adapter<TransactionR
                 break;
         }
 
+        String amountInOriginalCurrency = transactionSelected.getCurrency() + String.valueOf(transactionSelected.getOriginalAmount());
+        String amountInHomeCurrency = Utils.getInstance(context).getHomeCurrencyOfCurrentTrip().getSymbol() + " " +
+                transactionSelected.getConvertedAmount();
+
 
         holder.txtCategory.setText(transactionSelected.getCategory());
         holder.txtDescription.setText(transactionSelected.getDescription());
-        holder.txtOriginalAmount.setText(String.valueOf(transactionSelected.getOriginalAmount()));
-        holder.txtConvertedAmount.setText(String.valueOf(transactionSelected.getConvertedAmount()));
+        holder.txtOriginalAmount.setText(amountInOriginalCurrency);
+        holder.txtConvertedAmount.setText(amountInHomeCurrency);
         holder.imgCategory.setImageResource(image);
 
         holder.transactionParent.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +96,8 @@ public class TransactionRecViewAdapter extends RecyclerView.Adapter<TransactionR
 
                 Bundle bundle = new Bundle();
                 bundle.putString("action", "edit");
-                bundle.putParcelable("transaction", transactionSelected);
+                bundle.putInt("transactionId", transactionSelected.getId());
+//                bundle.putParcelable("transaction", transactionSelected);
                 AppCompatActivity activity = (AppCompatActivity)view.getContext();
                 EntryFragment fragment = new EntryFragment();
                 fragment.setArguments(bundle);
@@ -167,6 +171,7 @@ public class TransactionRecViewAdapter extends RecyclerView.Adapter<TransactionR
             imgCategory = itemView.findViewById(R.id.imgCategory);
         }
     }
+
 
 }
 

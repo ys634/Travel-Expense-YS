@@ -12,7 +12,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.cardview.widget.CardView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -26,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +33,6 @@ import com.yut.travelexpense.CurrencyConversion.RetrofitBuilder;
 import com.yut.travelexpense.CurrencyConversion.RetrofitInterface;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import retrofit2.Call;
@@ -48,12 +45,13 @@ public class EntryFragment extends Fragment {
     View view;
 
     private EditText edtTxtAmount, edtTxtDescription;
-    private Button btnEnter, btnUnit, btnCategoryEditor;
+    private Button btnEnter, btnCurrency, btnCategoryEditor;
     private TextView txtDate, txtCountry;
-    private CardView cardCategory;
     Bundle bundle;
     String action;
     CategoryFragment categoryFragment;
+    TripModel currentTrip;
+
 
     final Calendar calendar = Calendar.getInstance();
     final int year = calendar.get(Calendar.YEAR);
@@ -87,24 +85,38 @@ public class EntryFragment extends Fragment {
         }
         Toast.makeText(getContext(), "action: " + action, Toast.LENGTH_SHORT).show();
 
+
+
+        currentTrip = Utils.getInstance(getContext()).getCurrentTrip();
+
         initComponents(action);
 //        initCategories();
 
-        initClickListeners(action);
+        initClickListeners();
 
         String countryPreference = Utils.getInstance(getContext()).getCountryPreference();
         if (countryPreference != null & !countryPreference.equals("")) {
             txtCountry.setText(countryPreference);
         }
 
-        String unitPreference = Utils.getInstance(getContext()).getUnitPreference();
-        if (unitPreference != null & !unitPreference.equals("")) {
-            btnUnit.setText(unitPreference);
+        String currencyPreference = Utils.getInstance(getContext()).getCurrencyPreference();
+        if (!currencyPreference.isEmpty()) {
+            btnCurrency.setText(currencyPreference);
         }
 
         return view;
     }
 
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (action.equals("continue")) {
+            edtTxtAmount.setText(Utils.getInstance(getContext()).getOnResumeAmount());
+            txtDate.setText(Utils.getInstance(getContext()).getOnResumeDate());
+            edtTxtDescription.setText(Utils.getInstance(getContext()).getOnResumeDescription());
+        }
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -142,10 +154,11 @@ public class EntryFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Transaction incomingTransaction = bundle.getParcelable("transaction");
 
-                        //TODO: create a callback so that the recview is updated
-
-
                         Utils.getInstance(getContext()).removeTransaction(incomingTransaction);
+
+
+                        //TODO:                         notifyItemRemoved(holder.getAdapterPosition());
+                        //                        notifyItemRangeChanged(holder.getAdapterPosition(), getItemCount());??
                         FragmentTransaction fragmentTransaction = getParentFragmentManager().beginTransaction();
                         Bundle bundle = new Bundle();
                         bundle.putString("src", "entry");
@@ -177,12 +190,11 @@ public class EntryFragment extends Fragment {
 
         edtTxtAmount = view.findViewById(R.id.edtTxtAmount);
         edtTxtDescription = view.findViewById(R.id.edtTxtDescription);
-        btnEnter = view.findViewById(R.id.btnEdit);
-        btnUnit = view.findViewById(R.id.btnUnit);
+        btnEnter = view.findViewById(R.id.btnEnter);
+        btnCurrency = view.findViewById(R.id.btnCurrency);
         btnCategoryEditor = view.findViewById(R.id.btnCategoryEditor);
         txtCountry = view.findViewById(R.id.txtCountry);
         txtDate = view.findViewById(R.id.txtDate);
-        cardCategory = view.findViewById(R.id.cardCategory);
 
 //        rrGroupCategories = view.findViewById(R.id.rrGroupCategories);
 
@@ -190,68 +202,49 @@ public class EntryFragment extends Fragment {
         //TODO: Remove below this
         btnClear = view.findViewById(R.id.btnClear);
 
-        if (!action.equals("add")) {
+
+        txtCountry.setText(Utils.getInstance(getContext()).getCountryPreference());
+        btnCurrency.setText(Utils.getInstance(getContext()).getCurrencyPreference());
+
+        if (action.equals("edit") || action.equals("continue")) {
             setHasOptionsMenu(true);
 
-            Transaction incomingTransaction = bundle.getParcelable("transaction");
-
-            edtTxtAmount.setText(String.valueOf(incomingTransaction.getOriginalAmount()));
-            edtTxtDescription.setText(incomingTransaction.getDescription());
-            txtCountry.setText(incomingTransaction.getCountry());
-            btnUnit.setText(incomingTransaction.getUnit());
-            txtDate.setText(incomingTransaction.getDate().format(formatter));
             if (action.equals("edit")) {
+                Transaction incomingTransaction = Utils.getInstance(getContext()).
+                        searchTransactionById(bundle.getInt("transactionId"));
+
+                edtTxtAmount.setText(String.valueOf(incomingTransaction.getOriginalAmount()));
+                edtTxtDescription.setText(incomingTransaction.getDescription());
+                txtCountry.setText(incomingTransaction.getCountry());
+                btnCurrency.setText(incomingTransaction.getCurrency());
+                if (incomingTransaction.getDate() != null) {
+                    txtDate.setText(incomingTransaction.getDate().format(formatter));
+                }
+
                 btnEnter.setText("Edit");
+
             }
         }
     }
 
-    private void initCategories() {
-        ArrayList<CategoryModel> categories = Utils.getInstance(getContext()).getAllCategories();
 
-        ArrayList<Integer> btnIDs = new ArrayList<>();
-
-        for (int i = 0; i < categories.size(); i++) {
-            int j = i + 1;
-            String btnID = "radioBtn" + j;
-
-            int resID = this.getResources().getIdentifier(btnID, "id", getActivity().getPackageName());
-
-            btnIDs.add(resID);
-
-            RadioButton radioButton = (RadioButton) view.findViewById(btnIDs.get(i));
-            radioButton.setText(categories.get(i).getName());
-            radioButton.setCompoundDrawablesWithIntrinsicBounds(null,
-                    ResourcesCompat.getDrawable(getResources(), categories.get(i).getImageURL(), null),
-                    null,
-                    null);
-
-        }
-    }
-
-    private void initClickListeners (String action) {
+    private void initClickListeners () {
 
         // Country button OnClickListener
         txtCountry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                //TODO: Making it so that input is not lost after navigating to CountriesActivity
+                String amount = "";
+                if (!edtTxtAmount.getText().toString().isBlank()) {
+                    amount = edtTxtAmount.getText().toString();
+                }
+
+                Utils.getInstance(getContext()).putOnResume(amount,
+                        txtDate.getText().toString(), edtTxtDescription.getText().toString());
+
                 Intent intent = new Intent(getActivity(), CountriesActivity.class);
 
-//                LocalDate entryDate;
-//                String text = txtDate.getText().toString();
-//
-//                if (text.equals("Today")) {
-//                    entryDate = today;
-//                } else {
-//                    entryDate = LocalDate.parse(text, formatter);
-//                }
-//
-//                Transaction newTransaction = createTransaction(entryDate);
-                Transaction newTransaction = new Transaction();
-
-                intent.putExtra("transaction", newTransaction);
 
                 startActivity(intent);
 
@@ -281,6 +274,8 @@ public class EntryFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+                Utils.getInstance(getContext()).removeOnResumeData();
+
                 LocalDate entryDate;
                 String text = txtDate.getText().toString();
 
@@ -294,14 +289,12 @@ public class EntryFragment extends Fragment {
 
                 int rdbId = categoryFragment.getSelectedRbdId();
 
-                Toast.makeText(getContext(), "rdbId: " + rdbId, Toast.LENGTH_SHORT).show();
-
                 if (rdbId == -1) {  // No category is selected.
                     categoryFragment.changeBackgroundToRed();
                     // TODO: Show error
                 } else {
-                    if (entryDate.isAfter(Utils.getInstance(getContext()).getCurrentTrip().getEndDate()) ||
-                    entryDate.isBefore(Utils.getInstance(getContext()).getCurrentTrip().getStartDate())) { // Entered date is outside of the trip duration.
+                    if (entryDate.isAfter(currentTrip.getEndDate()) ||
+                    entryDate.isBefore(currentTrip.getStartDate())) { // Entered date is outside of the trip duration.
                         txtDate.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.red_border, null));
                         //TODO: Show error
 
@@ -323,11 +316,22 @@ public class EntryFragment extends Fragment {
 
 
 
-        // Unit button OnClickListener
-        btnUnit.setOnClickListener(new View.OnClickListener() {
+        // Currency button OnClickListener
+        btnCurrency.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getActivity(), UnitsActivity.class);
+
+                String amount = "";
+                if (!edtTxtAmount.getText().toString().isBlank()) {
+                    amount = edtTxtAmount.getText().toString();
+                }
+
+                Utils.getInstance(getContext()).putOnResume(amount,
+                        txtDate.getText().toString(), edtTxtDescription.getText().toString());
+
+                Intent intent = new Intent(getActivity(), CurrencyActivity.class);
+                intent.putExtra("src", "entryFragment");
+
                 startActivity(intent);
             }
 
@@ -364,22 +368,20 @@ public class EntryFragment extends Fragment {
 
         RetrofitInterface retrofitInterface = RetrofitBuilder.getRetrofitInstance().create(RetrofitInterface.class);
 
-
-        // TODO: change USD to home currency
-        Call<JsonObject> call = retrofitInterface.getExchangeRate("USD");
-
+        Toast.makeText(getContext(), "home currency: " + currentTrip.getHomeCurrency().getShortName(), Toast.LENGTH_SHORT).show();
+        Call<JsonObject> call = retrofitInterface.getExchangeRate(currentTrip.getHomeCurrency().getShortName());
 
         double finalAmount = Double.parseDouble(amount);
-        call.enqueue(new Callback<JsonObject>() {
+        call.enqueue(new Callback<>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 JsonObject results = response.body();
                 JsonObject rates = results.getAsJsonObject("conversion_rates");
-                double multiplier = Double.parseDouble(rates.get(btnUnit.getText().toString()).toString());
+                double multiplier = Double.parseDouble(rates.get(btnCurrency.getText().toString()).toString());
 
                 Transaction newTransaction = new Transaction(finalAmount,
                         round(finalAmount / multiplier, 2),
-                        btnUnit.getText().toString(),
+                        btnCurrency.getText().toString(),
                         categoryFragment.getSelectedCategory(rdbId),
                         edtTxtDescription.getText().toString(),
                         txtCountry.getText().toString(),
@@ -390,7 +392,8 @@ public class EntryFragment extends Fragment {
 
                 if (action.equals("edit")) {
 
-                    Transaction incomingTransaction = bundle.getParcelable("transaction");
+                    Transaction incomingTransaction = Utils.getInstance(getContext()).
+                            searchTransactionById(bundle.getInt("transactionId"));
 
                     Utils.getInstance(view.getContext()).removeTransaction(incomingTransaction);
                     Toast.makeText(view.getContext(), "Transaction edited. ID: " + newTransaction.getId(), Toast.LENGTH_SHORT).show();
@@ -404,11 +407,11 @@ public class EntryFragment extends Fragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                Log.e("Retrofit", "Error: " + t.getMessage());
             }
         });
 
-
-
     }
+
+
 }

@@ -2,12 +2,10 @@ package com.yut.travelexpense;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.TextView;
@@ -26,13 +24,11 @@ public class CountriesRecViewAdapter extends RecyclerView.Adapter<CountriesRecVi
     Context context;
     ArrayList<CountryModel> countryModels;
     ArrayList<CountryModel> countryModelsCopy;
-    Transaction transaction;
 
 
-    public CountriesRecViewAdapter(Context context, ArrayList<CountryModel> countryModels, Transaction transaction) {
+    public CountriesRecViewAdapter(Context context, ArrayList<CountryModel> countryModels) {
         this.context = context;
         this.countryModels = countryModels;
-        this.transaction = transaction;
         countryModelsCopy = new ArrayList<>(countryModels);
 
     }
@@ -66,7 +62,6 @@ public class CountriesRecViewAdapter extends RecyclerView.Adapter<CountriesRecVi
 
 
                 Intent intent = new Intent(context, MainActivity.class);
-                intent.putExtra("transaction", transaction);
                 intent.putExtra("src", "country");
                 //TODO: pass transaction to EntryFragment
                 context.startActivity(intent);
@@ -121,7 +116,7 @@ public class CountriesRecViewAdapter extends RecyclerView.Adapter<CountriesRecVi
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            txtCountry = itemView.findViewById(R.id.txtUnitShort);
+            txtCountry = itemView.findViewById(R.id.txtCurrencyShort);
             countryParent = itemView.findViewById(R.id.countryParent);
         }
     }

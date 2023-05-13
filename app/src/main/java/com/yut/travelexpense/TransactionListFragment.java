@@ -25,6 +25,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class TransactionListFragment extends Fragment {
@@ -34,12 +37,14 @@ public class TransactionListFragment extends Fragment {
     RecyclerView transactionListRecView;
     FloatingActionButton floatingBtn;
     TextView txtNoTransaction;
-    TransactionRecViewAdapter adapter;
+    TransactionSectionedRecViewAdapter adapter;
     SearchView searchView;
     MenuItem searchItem;
 
     Bundle bundle;
     String src;
+
+    ArrayList<Transaction> transactions = new ArrayList<>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,12 +83,13 @@ public class TransactionListFragment extends Fragment {
             }
         });
 
+        List<Section> sections = new ArrayList<>();
 
         transactionListRecView = view.findViewById(R.id.transactionListRecView);
 
         txtNoTransaction = view.findViewById(R.id.txtNoTransaction);
 
-        ArrayList<Transaction> transactions = Utils.getInstance(getContext()).getAllTransactions();
+        transactions = Utils.getInstance(getContext()).getAllTransactions();
 
         if (src.equals("pie")) {
             String groupName = bundle.getString("sortBy");
@@ -95,18 +101,37 @@ public class TransactionListFragment extends Fragment {
             transactions.removeIf(t -> !t.getDate().isEqual(date));
         }
 
-        if (transactions.size() != 0) {
-            Collections.sort(transactions);
+        if (transactions != null) {
+            if (transactions.size() != 0) {
 
-            txtNoTransaction.setVisibility(View.GONE);
-            adapter = new TransactionRecViewAdapter(getActivity(), transactions);
+                Map<LocalDate, List<Transaction>> transactionsByDate = new TreeMap<>();
+                for (Transaction t: transactions) {
+                    LocalDate date = t.getDate();
+                    if (!transactionsByDate.containsKey(date)) {
+                        transactionsByDate.put(date, new ArrayList<>());
+                    }
+                    transactionsByDate.get(date).add(t);
+                }
+
+                for (LocalDate date: transactionsByDate.keySet()) {
+                    sections.add(new Section(date, transactionsByDate.get(date)));
+                }
+
+                Collections.sort(sections);
+
+                txtNoTransaction.setVisibility(View.GONE);
+
+                adapter = new TransactionSectionedRecViewAdapter(getActivity(), sections);
+//                adapter = new TransactionRecViewAdapter(getActivity(), transactions);
 
 
-            transactionListRecView.setAdapter(adapter);
-            transactionListRecView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        } else {
-            txtNoTransaction.setVisibility(View.VISIBLE);
+                transactionListRecView.setAdapter(adapter);
+                transactionListRecView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            } else {
+                txtNoTransaction.setVisibility(View.VISIBLE);
+            }
         }
+
 
         return view;
     }
@@ -137,6 +162,4 @@ public class TransactionListFragment extends Fragment {
         });
 
     }
-
-
 }

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -58,7 +59,7 @@ public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapte
         double totalSpent = 0.00;
         ArrayList<Transaction> transactions = tripSelected.getTransactions();
         for (Transaction t: transactions) {
-            totalSpent += t.getOriginalAmount();
+            totalSpent += t.getConvertedAmount();
         }
 
         String spentOverBudget = round(totalSpent, 2) + "/" + String.valueOf(tripSelected.getBudget());
@@ -66,14 +67,16 @@ public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapte
 
         holder.txtTripName.setText(tripSelected.getName());
         holder.txtBudget.setText(spentOverBudget);
-        holder.txtCurrency.setText(tripSelected.getHomeCurrency());
+        holder.txtCurrency.setText(tripSelected.getHomeCurrency().getShortName());
         holder.txtDuration.setText(dateText);
 
         holder.icEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(context, "Before start date: " + tripSelected.getStartDate(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, AddTripActivity.class);
-                intent.putExtra("trip", tripSelected);
+                intent.putExtra("tripId", tripSelected.getId());
+//                intent.putExtra("trip", tripSelected);
                 intent.putExtra("action", "edit");
 
                 context.startActivity(intent);

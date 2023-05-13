@@ -3,8 +3,6 @@ package com.yut.travelexpense;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.loader.app.LoaderManager;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -20,15 +18,19 @@ public class Utils {
     private static Utils instance;
     private final SharedPreferences sharedPreferences;
 
-//    public static final String SHARED_PREFS = "sharedPreference";
+    public static final String SHARED_PREFS = "sharedPreference";
     public static final String COUNTRY_PREF = "countryPref";
-    public static final String UNIT_PREF = "unitPref";
+    public static final String CURRENCY_PREF = "currencyPref";
+    public static final String HOME_CURRENCY = "homeCurrency";
     public static final String TEMP_TRANSACTION = "temporaryTransaction";
     public static final String LAST_TRANSACTION_ID = "lastTransactionId";
+    public static final String LAST_TRIP_ID = "lastTripId";
     public static final String ALL_CATEGORIES_KEY = "allCategories";
     public static final String ALL_TRIPS_KEY = "allTrips";
-    public static final String LAST_TRIP_ID = "lastTripId";
     public static final String NO_OF_CATEGORIES = "noOfCategories";
+    public static final String ON_RESUME_AMOUNT = "onResumeAmount";
+    public static final String ON_RESUME_DATE = "onResumeDate";
+    public static final String ON_RESUME_DESCRIPTION = "onResumeDescription";
 
 
     private Utils(Context context) {
@@ -53,24 +55,34 @@ public class Utils {
     // Get all the transactions from the current trip.
     public ArrayList<Transaction> getAllTransactions() {
         TripModel trip = getCurrentTrip();
-        return trip.getTransactions();
+        if (trip == null) {
+            return null;
+        } else {
+            return trip.getTransactions();
+        }
     }
 
     private void initData() {
 
         ArrayList<TripModel> trips = new ArrayList<>();
+        CurrencyModel homeCurrency = new CurrencyModel("USD", "United States Dollar", "$");
         ArrayList<CategoryModel> categories = new ArrayList<>();
         addBasicCategories(categories);
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).
+                create();
         editor.putString(ALL_CATEGORIES_KEY, gson.toJson(categories));
-        editor.putString(COUNTRY_PREF, "");
-        editor.putString(UNIT_PREF, "");
+        editor.putString(COUNTRY_PREF, "United States");
+        editor.putString(CURRENCY_PREF, "USD");
+        editor.putString(HOME_CURRENCY, gson.toJson(homeCurrency));
         editor.putInt(LAST_TRANSACTION_ID, 0);
         editor.putInt(LAST_TRIP_ID, 0);
         editor.putString(ALL_TRIPS_KEY, gson.toJson(trips));
         editor.putInt(NO_OF_CATEGORIES, 8);
+        editor.putString(ON_RESUME_AMOUNT, "");
+        editor.putString(ON_RESUME_DATE, "Today");
+        editor.putString(ON_RESUME_DESCRIPTION, "");
         editor.commit();
     }
 
@@ -141,6 +153,9 @@ public class Utils {
 
     public TripModel getCurrentTrip() {
         ArrayList<TripModel> trips = getAllTrips();
+        if (trips == null) {
+            return null;
+        }
 
         TripModel currentTrip = new TripModel();
 
@@ -153,9 +168,20 @@ public class Utils {
         return currentTrip;
     }
 
-    public void setTripToOngoing(TripModel trip) {
-
+    public TripModel searchTripById(int id) {
+        ArrayList<TripModel> allTrips = getAllTrips();
+        TripModel trip = null;
+        if (allTrips != null) {
+            for (TripModel t: allTrips) {
+                if (t.getId() == id) {
+                    trip = t;
+                    break;
+                }
+            }
+        }
+        return trip;
     }
+
 
 
     //_________________________________________________________________________________________
@@ -175,7 +201,6 @@ public class Utils {
         addTrip(trip);
 
     }
-
 
     public void removeTransaction(Transaction transaction) {
 
@@ -202,20 +227,41 @@ public class Utils {
         addTrip(trip);
     }
 
+    public Transaction searchTransactionById(int id) {
+        ArrayList<Transaction> transactions = getAllTransactions();
+
+        Transaction result = null;
+
+        for (Transaction t: transactions) {
+            if (t.getId() == id) {
+                result = t;
+                break;
+            }
+        }
+
+        return result;
+    }
+
     public void clearAll() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.remove(COUNTRY_PREF);
-        editor.remove(UNIT_PREF);
+        editor.remove(CURRENCY_PREF);
+        editor.remove(HOME_CURRENCY);
+        editor.remove(TEMP_TRANSACTION);
         editor.remove(LAST_TRANSACTION_ID);
         editor.remove(LAST_TRIP_ID);
-        editor.remove(ALL_TRIPS_KEY);
         editor.remove(ALL_CATEGORIES_KEY);
-        editor.remove(TEMP_TRANSACTION);
+        editor.remove(ALL_TRIPS_KEY);
+        editor.remove(NO_OF_CATEGORIES);
+        editor.remove(ON_RESUME_AMOUNT);
+        editor.remove(ON_RESUME_DATE);
+        editor.remove(ON_RESUME_DESCRIPTION);
+
         initData();
     }
 
     //_________________________________________________________________________________________
-    //UNIT&COUNTRY PREFERENCES
+    //CURRENCY & COUNTRY PREFERENCES
 
     public void putCountryPreference(String country) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -227,16 +273,33 @@ public class Utils {
         return sharedPreferences.getString(COUNTRY_PREF, null);
     }
 
-    public void putUnitPreference(String unit) {
+    public void putCurrencyPreference(String currency) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(UNIT_PREF, unit);
+        editor.putString(CURRENCY_PREF, currency);
         editor.commit();
     }
 
-    public String getUnitPreference() {
-        return sharedPreferences.getString(UNIT_PREF, null);
+    public String getCurrencyPreference() {
+        return sharedPreferences.getString(CURRENCY_PREF, null);
     }
 
+
+    public void putHomeCurrency(CurrencyModel currency) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        editor.putString(HOME_CURRENCY, gson.toJson(currency));
+        editor.commit();
+    }
+
+    public CurrencyModel getHomeCurrency() {
+        Gson gson = new Gson();
+        Type type = new TypeToken<CurrencyModel>(){}.getType();
+        return gson.fromJson(sharedPreferences.getString(HOME_CURRENCY, null), type);
+    }
+
+    public CurrencyModel getHomeCurrencyOfCurrentTrip() {
+        return getCurrentTrip().getHomeCurrency();
+    }
 
 
     //_________________________________________________________________________________________
@@ -334,5 +397,42 @@ public class Utils {
 
     }
 
+
+    //_____________________________________________________________________________________
+    // ON RESUME DATA STORAGE
+
+    public void putOnResume(String amount, String date, String description) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ON_RESUME_AMOUNT, amount);
+        editor.putString(ON_RESUME_DATE, date);
+        editor.putString(ON_RESUME_DESCRIPTION, description);
+        editor.commit();
+    }
+
+    public String getOnResumeAmount() {
+        return sharedPreferences.getString(ON_RESUME_AMOUNT, "");
+//        if (amount.isEmpty()) {
+//           return "";
+//        } else {
+//            return amount;
+//        }
+//
+    }
+
+    public String getOnResumeDate() {
+        return sharedPreferences.getString(ON_RESUME_DATE, "Today");
+    }
+
+    public String getOnResumeDescription() {
+        return sharedPreferences.getString(ON_RESUME_DESCRIPTION, "");
+    }
+
+    public void removeOnResumeData() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(ON_RESUME_AMOUNT, "");
+        editor.putString(ON_RESUME_DATE, "Today");
+        editor.putString(ON_RESUME_DESCRIPTION, "");
+        editor.commit();
+    }
 
 }

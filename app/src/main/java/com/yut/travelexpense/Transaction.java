@@ -12,18 +12,18 @@ public class Transaction implements Parcelable, Comparable<Transaction> {
 
     private double originalAmount;
     private double convertedAmount;
-    private String unit;
+    private String currency;
     private String category;
     private String description;
     private String country;
     private LocalDate date;
     private int id;
 
-    public Transaction(double originalAmount, double convertedAmount, String unit, String category,
+    public Transaction(double originalAmount, double convertedAmount, String currency, String category,
                        String description, String country, LocalDate date, int id) {
         this.originalAmount = originalAmount;
         this.convertedAmount = convertedAmount;
-        this.unit = unit;
+        this.currency = currency;
         this.category = category;
         this.description = description;
         this.country = country;
@@ -33,7 +33,6 @@ public class Transaction implements Parcelable, Comparable<Transaction> {
     }
 
     public Transaction(){
-
     };
 
 
@@ -47,10 +46,15 @@ public class Transaction implements Parcelable, Comparable<Transaction> {
     protected Transaction(Parcel in) {
         originalAmount = in.readDouble();
         convertedAmount = in.readDouble();
-        unit = in.readString();
+        currency = in.readString();
         category = in.readString();
         description = in.readString();
         country = in.readString();
+        if (in.readLong() == -1) {
+            date = null;
+        } else {
+            date = LocalDate.ofEpochDay(in.readLong());
+        }
         id = in.readInt();
     }
 
@@ -82,12 +86,12 @@ public class Transaction implements Parcelable, Comparable<Transaction> {
         this.convertedAmount = convertedAmount;
     }
 
-    public String getUnit() {
-        return unit;
+    public String getCurrency() {
+        return currency;
     }
 
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public String getCategory() {
@@ -139,15 +143,22 @@ public class Transaction implements Parcelable, Comparable<Transaction> {
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeDouble(originalAmount);
         dest.writeDouble(convertedAmount);
-        dest.writeString(unit);
+        dest.writeString(currency);
         dest.writeString(category);
         dest.writeString(description);
         dest.writeString(country);
+//        if (date == null) {
+//            dest.writeLong(-1);
+//        } else {
+            dest.writeLong(date.toEpochDay());
+//        }
         dest.writeInt(id);
     }
 
     @Override
     public int compareTo(Transaction o) {
-        return Math.toIntExact(o.getDate().toEpochDay() - this.date.toEpochDay());
+        return Math.toIntExact(o.getDate().toEpochDay() - this.date.toEpochDay()) == 0
+                ? o.getId() - this.getId()
+                : Math.toIntExact(o.getDate().toEpochDay() - this.date.toEpochDay());
     }
 }

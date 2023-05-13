@@ -41,13 +41,13 @@ public class CountriesActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Intent intent = getIntent();
-        Transaction transaction = intent.getParcelableExtra("transaction");
+//        Transaction transaction = intent.getParcelableExtra("transaction");
         countriesRecView = findViewById(R.id.countriesRecView);
 
         setUpCountryModels();
 
 
-        adapter = new CountriesRecViewAdapter(this, countryModels, transaction);
+        adapter = new CountriesRecViewAdapter(this, countryModels);
         countriesRecView.setAdapter(adapter);
         countriesRecView.setLayoutManager(new LinearLayoutManager(this));
     }

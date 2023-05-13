@@ -4,11 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
-import androidx.loader.app.LoaderManager;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class TripModel implements Parcelable, Comparable<TripModel> {
 
@@ -17,13 +15,13 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
     private LocalDate endDate;
     private Double budget;
     private int id;
-    private String homeCurrency;
+    private CurrencyModel homeCurrency;
     private ArrayList<Transaction> transactions;
     private boolean isCurrentTrip;
     private boolean isOngoing;
 
     public TripModel(String name, LocalDate startDate, LocalDate endDate, Double budget, int id,
-                     String homeCurrency, ArrayList<Transaction> transactions, boolean isCurrentTrip, boolean isOngoing) {
+                     CurrencyModel homeCurrency, ArrayList<Transaction> transactions, boolean isCurrentTrip, boolean isOngoing) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -39,17 +37,26 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
     }
 
 
+
     protected TripModel(Parcel in) {
         name = in.readString();
-        startDate = LocalDate.ofEpochDay(in.readLong());
-        endDate = LocalDate.ofEpochDay(in.readLong());
+        if (in.readLong() == -1) {
+            startDate = null;
+        } else {
+            startDate = LocalDate.ofEpochDay(in.readLong());
+        }
+        if (in.readLong() == -1) {
+            endDate = null;
+        } else {
+            endDate = LocalDate.ofEpochDay(in.readLong());
+        }
         if (in.readByte() == 0) {
             budget = null;
         } else {
             budget = in.readDouble();
         }
         id = in.readInt();
-        homeCurrency = in.readString();
+        homeCurrency = in.readParcelable(CurrencyModel.class.getClassLoader());
         transactions = in.createTypedArrayList(Transaction.CREATOR);
         isCurrentTrip = in.readByte() != 0;
         isOngoing = in.readByte() != 0;
@@ -66,6 +73,7 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
             return new TripModel[size];
         }
     };
+
 
     public String getName() {
         return name;
@@ -107,11 +115,11 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
         this.id = id;
     }
 
-    public String getHomeCurrency() {
+    public CurrencyModel getHomeCurrency() {
         return homeCurrency;
     }
 
-    public void setHomeCurrency(String homeCurrency) {
+    public void setHomeCurrency(CurrencyModel homeCurrency) {
         this.homeCurrency = homeCurrency;
     }
 
@@ -150,8 +158,16 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
     @Override
     public void writeToParcel(@NonNull Parcel dest, int flags) {
         dest.writeString(name);
-        dest.writeLong(startDate.toEpochDay());
-        dest.writeLong(endDate.toEpochDay());
+//        if (startDate == null) {
+//            dest.writeLong(-1);
+//        } else {
+            dest.writeLong(startDate.toEpochDay());
+//        }
+//        if (endDate == null) {
+//            dest.writeLong(-1);
+//        } else {
+            dest.writeLong(endDate.toEpochDay());
+//        }
         if (budget == null) {
             dest.writeByte((byte) 0);
         } else {
@@ -159,11 +175,12 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
             dest.writeDouble(budget);
         }
         dest.writeInt(id);
-        dest.writeString(homeCurrency);
+        dest.writeParcelable(homeCurrency, flags);
         dest.writeTypedList(transactions);
         dest.writeByte((byte) (isCurrentTrip ? 1 : 0));
         dest.writeByte((byte) (isOngoing ? 1 : 0));
     }
+
 
     @Override
     public int compareTo(TripModel o) {

@@ -32,7 +32,7 @@ import retrofit2.Response;
 //TODO: passing data across activities
 // putExtra(Parcelable)
 
-// Token: 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
+// Token: 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
 
 public class MainActivity extends AppCompatActivity {
 
@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-
         return true;
     }
 
@@ -56,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        Utils.getInstance(this).clearAll();
         boolean isTripRecorded = Utils.getInstance(this).getAllTrips().size() > 0;
 
         // Run whenever category icons are messed up
@@ -70,36 +70,20 @@ public class MainActivity extends AppCompatActivity {
             binding = ActivityMainBinding.inflate(getLayoutInflater());
             setContentView(binding.getRoot());
 
-            //Toolbar setup
-            toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            setUpToolBar();
 
-            toolbar.setTitle(Utils.getInstance(this).getCurrentTrip().getName());
-
-            toolbar.setOnClickListener(view -> {
-                Intent intent = new Intent(MainActivity.this, TripListActivity.class);
-                startActivity(intent);
-
-            });
 
             Bundle bundle = new Bundle();
 
             Intent intent = getIntent();
             if (intent != null) {
                 if (Objects.equals(intent.getStringExtra("src"), "country")) {
-                    bundle.putParcelable("transaction", intent.getParcelableExtra("transaction"));
-//                    bundle.putString("action", "continue");
-                    bundle.putString("action", "add");
-//                    Toast.makeText(this, "C1", Toast.LENGTH_SHORT).show();
+                    bundle.putString("action", "continue");
                 } else {
                     bundle.putString("action", "add");
-//                    Toast.makeText(this, "C2", Toast.LENGTH_SHORT).show();
 
                 }
             }
-
-//            Toast.makeText(this, "C3", Toast.LENGTH_SHORT).show();
 
             EntryFragment entryFragment = new EntryFragment();
             entryFragment.setArguments(bundle);
@@ -136,6 +120,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setUpToolBar() {
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        toolbar.setTitle(Utils.getInstance(this).getCurrentTrip().getName());
+
+        toolbar.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, TripListActivity.class);
+            startActivity(intent);
+
+        });
+    }
 
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -152,34 +149,6 @@ public class MainActivity extends AppCompatActivity {
         return bd.doubleValue();
     }
 
-
-//    public static double convertUnit() {
-//
-//        double multiplier;
-//        RetrofitInterface retrofitInterface = RetrofitBuilder.getRetrofitInstance().create(RetrofitInterface.class);
-//
-//
-//        // TODO: change USD to home currency
-//        Call<JsonObject> call = retrofitInterface.getExchangeRate("USD");
-//
-//
-//        call.enqueue(new Callback<JsonObject>() {
-//            @Override
-//            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-//                JsonObject results = response.body();
-//                JsonObject rates = results.getAsJsonObject("rates");
-//                double multiplier = Double.parseDouble(rates.get("CRC").toString());
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<JsonObject> call, Throwable t) {
-//
-//            }
-//        });
-//
-//        return multiplier;
-//    }
 
 
 }

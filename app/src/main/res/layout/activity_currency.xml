@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UnitsActivity">
+    tools:context=".CurrencyActivity">
 
     <include
         layout="@layout/toolbar"
         android:id="@+id/toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/unitsRecView"
+        android:id="@+id/currencyRecView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"

@@ -10,280 +10,149 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/edtTxtAmount"
-            android:layout_width="240dp"
-            android:layout_height="60dp"
-            android:layout_marginTop="16dp"
-            android:ems="10"
-            android:hint="0.00"
-            android:textAlignment="textEnd"
-            android:inputType="numberDecimal"
-            app:layout_constraintEnd_toStartOf="@+id/btnUnit"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/btnEdit"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="Enter"
-            android:textSize="15sp"
-            android:drawableLeft="@drawable/ic_check"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/orange"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-
-        <Button
-            android:id="@+id/btnUnit"
-            android:layout_width="80dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="8dp"
-            android:text="CRC"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="@+id/edtTxtAmount"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="461dp" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="259dp" />
-
-        <EditText
-            android:id="@+id/edtTxtDescription"
-            android:layout_width="240dp"
-            android:layout_height="48dp"
-            android:hint="Description (optional)"
-            android:textSize="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline2"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btnClear"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Clear"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4"
-            app:layout_constraintHorizontal_bias="0.07"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <FrameLayout
-            android:id="@+id/frameCatInMain"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/txtCountry"
-            app:layout_constraintTop_toBottomOf="@+id/edtTxtAmount"
-            >
+            android:layout_height="match_parent"
+            app:cardCornerRadius="30dp"
+            app:strokeWidth="3dp"
+            app:strokeColor="@color/orange">
 
-        </FrameLayout>
-
-<!--        <androidx.cardview.widget.CardView-->
-<!--            android:id="@+id/cardCategory"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:clickable="true"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/txtCountry"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/edtTxtAmount">-->
-
-<!--            <com.yut.travelexpense.RelativeRadioGroup-->
-<!--                android:id="@+id/rrGroupCategories"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent">-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
 
-<!--                <View-->
-<!--                    android:id="@+id/strut"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="0dp"-->
-<!--                    android:layout_centerHorizontal="true" />-->
+            <EditText
+                android:id="@+id/edtTxtAmount"
+                android:layout_width="240dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="45dp"
+                android:layout_marginTop="16dp"
+                android:textSize="30sp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:ems="10"
+                android:hint="0.00"
+                android:inputType="numberDecimal"
+                android:textAlignment="textEnd"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btnEnter"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Enter"
+                android:textSize="15sp"
+                android:drawableLeft="@drawable/ic_check"
+                android:textAllCaps="false"
+                android:backgroundTint="@color/orange"
+                app:layout_constraintBottom_toTopOf="@+id/guideline2"
+                app:layout_constraintEnd_toEndOf="parent" />
 
 
-<!--                <RadioButton-->
-<!--                    android:id="@+id/radioBtn1"-->
-<!--                    style="@style/categories_button"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_alignParentStart="true"-->
-<!--                    android:layout_marginStart="5dp"-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_marginEnd="5dp"-->
-<!--                    android:layout_marginBottom="5dp"-->
-<!--                    android:layout_toStartOf="@id/radioBtn2"-->
-<!--                    android:background="@drawable/radiobutton_background"-->
-<!--                    android:drawableTop="@drawable/ic_accommodation"-->
-<!--                    android:gravity="center"-->
-<!--                    android:text="Accommodation" />-->
+            <Button
+                android:id="@+id/btnCurrency"
+                android:layout_width="80dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="32dp"
+                android:backgroundTint="@color/white"
+                android:text="CRC"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="@+id/edtTxtAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edtTxtAmount" />
 
-<!--                <RadioButton-->
-<!--                    android:id="@+id/radioBtn2"-->
-<!--                    style="@style/categories_button"-->
-<!--                    android:layout_width="92.5dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_alignEnd="@id/strut"-->
-<!--                    android:layout_marginStart="5dp"-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_marginEnd="5dp"-->
-<!--                    android:layout_marginBottom="5dp"-->
-<!--                    android:background="@drawable/radiobutton_background"-->
-<!--                    android:drawableTop="@drawable/ic_food"-->
-<!--                    android:gravity="center"-->
-<!--                    android:text="Food" />-->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="461dp" />
 
-<!--                    <RadioButton-->
-<!--                        android:id="@+id/radioBtn3"-->
-<!--                        style="@style/categories_button"-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_alignStart="@id/strut"-->
-<!--                        android:layout_margin="5dp"-->
-<!--                        android:layout_toStartOf="@+id/radioBtn4"-->
-<!--                        android:background="@drawable/radiobutton_background"-->
-<!--                        android:drawableTop="@drawable/ic_transportation"-->
-<!--                        android:gravity="center"-->
-<!--                        android:text="Transportation" />-->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="259dp" />
 
-<!--                    <RadioButton-->
-<!--                        android:id="@+id/radioBtn4"-->
-<!--                        style="@style/categories_button"-->
-<!--                        android:layout_width="92.5dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_alignParentEnd="true"-->
-<!--                        android:layout_margin="5dp"-->
-<!--                        android:background="@drawable/radiobutton_background"-->
-<!--                        android:drawableTop="@drawable/ic_transportation"-->
-<!--                        android:gravity="center"-->
-<!--                        android:text="Transportation" />-->
+            <EditText
+                android:id="@+id/edtTxtDescription"
+                android:layout_width="240dp"
+                android:layout_height="48dp"
+                android:hint="Description (optional)"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@+id/guideline2"
+                app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                app:layout_constraintStart_toStartOf="parent" />
 
-<!--                <RadioButton-->
-<!--                    android:id="@+id/radioBtn5"-->
-<!--                    style="@style/categories_button"-->
-<!--                    android:layout_width="0dp"-->
+            <Button
+                android:id="@+id/btnClear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clear"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                app:layout_constraintHorizontal_bias="0.07"
+                app:layout_constraintStart_toStartOf="parent" />
 
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_below="@+id/radioBtn1"-->
-<!--                    android:layout_alignParentStart="true"-->
-<!--                    android:layout_marginStart="5dp"-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_marginEnd="5dp"-->
-<!--                    android:layout_marginBottom="5dp"-->
-<!--                    android:layout_toStartOf="@id/radioBtn6"-->
-<!--                    android:background="@drawable/radiobutton_background"-->
-<!--                    android:drawableTop="@drawable/ic_accommodation"-->
-<!--                    android:gravity="center"-->
-<!--                    android:text="Accommodation" />-->
+            <FrameLayout
+                android:id="@+id/frameCatInMain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/txtCountry"
+                app:layout_constraintTop_toBottomOf="@+id/edtTxtAmount">
 
+            </FrameLayout>
 
-<!--                <RadioButton-->
-<!--                    android:id="@+id/radioBtn6"-->
-<!--                    style="@style/categories_button"-->
-<!--                    android:layout_width="92.5dp"-->
-<!--                    android:layout_height="wrap_content"-->
+            <TextView
+                android:id="@+id/txtDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:drawablePadding="10dp"
+                android:text="Today"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:padding="6dp"
+                app:drawableLeftCompat="@drawable/ic_calendar"
+                app:layout_constraintBottom_toTopOf="@+id/edtTxtDescription"
+                app:layout_constraintEnd_toStartOf="@+id/guideline4"
+                app:layout_constraintHorizontal_bias="0.06"
+                app:layout_constraintStart_toStartOf="@+id/edtTxtDescription" />
 
-<!--                    android:layout_below="@id/radioBtn2"-->
-<!--                    android:layout_alignEnd="@id/strut"-->
-<!--                    android:layout_marginStart="5dp"-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_marginEnd="5dp"-->
-<!--                    android:layout_marginBottom="5dp"-->
-<!--                    android:background="@drawable/radiobutton_background"-->
-<!--                    android:drawableTop="@drawable/ic_accommodation"-->
-<!--                    android:gravity="center"-->
-<!--                    android:text="Accommodation" />-->
+            <TextView
+                android:id="@+id/txtCountry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_flag"
+                android:drawablePadding="10dp"
+                android:text="Country"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/txtDate"
+                app:layout_constraintStart_toStartOf="@+id/txtDate" />
 
-<!--                    <RadioButton-->
-<!--                        android:id="@+id/radioBtn7"-->
-<!--                        style="@style/categories_button"-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
+            <Button
+                android:id="@+id/btnCategoryEditor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@color/peach_orange"
+                android:drawableLeft="@drawable/ic_add"
+                android:text="Category"
+                android:textSize="8sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/frameCatInMain" />
 
-<!--                        android:layout_below="@id/radioBtn3"-->
-<!--                        android:layout_alignStart="@id/strut"-->
-<!--                        android:layout_margin="5dp"-->
-<!--                        android:layout_marginTop="30dp"-->
-<!--                        android:layout_toStartOf="@id/radioBtn8"-->
-<!--                        android:background="@drawable/radiobutton_background"-->
-<!--                        android:drawableTop="@drawable/ic_accommodation"-->
-<!--                        android:gravity="center"-->
-<!--                        android:text="Accommodation" />-->
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--                    <RadioButton-->
-<!--                        android:id="@+id/radioBtn8"-->
-<!--                        style="@style/categories_button"-->
-<!--                        android:layout_width="92.5dp"-->
-<!--                        android:layout_height="wrap_content"-->
-
-<!--                        android:layout_below="@id/radioBtn4"-->
-<!--                        android:layout_alignParentEnd="true"-->
-<!--                        android:layout_margin="5dp"-->
-<!--                        android:layout_marginTop="30dp"-->
-<!--                        android:background="@drawable/radiobutton_background"-->
-<!--                        android:drawableTop="@drawable/ic_accommodation"-->
-<!--                        android:gravity="center"-->
-<!--                        android:text="Accommodation" />-->
-
-
-
-<!--                </com.yut.travelexpense.RelativeRadioGroup>-->
-<!--        </androidx.cardview.widget.CardView>-->
-
-
-        <TextView
-            android:id="@+id/txtDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:drawablePadding="10dp"
-            android:text="Today"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            android:padding="6dp"
-            app:drawableLeftCompat="@drawable/ic_calendar"
-            app:layout_constraintBottom_toTopOf="@+id/edtTxtDescription"
-            app:layout_constraintEnd_toStartOf="@+id/guideline4"
-            app:layout_constraintHorizontal_bias="0.06"
-            app:layout_constraintStart_toStartOf="@+id/edtTxtDescription" />
-
-        <TextView
-            android:id="@+id/txtCountry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_flag"
-            android:drawablePadding="10dp"
-            android:text="Country"
-            android:padding="6dp"
-            android:layout_marginBottom="10dp"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/txtDate"
-            app:layout_constraintStart_toStartOf="@+id/txtDate" />
-
-        <Button
-            android:id="@+id/btnCategoryEditor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/peach_orange"
-            android:drawableLeft="@drawable/ic_add"
-            android:text="Category"
-            android:textSize="8sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frameCatInMain" />
+        </com.google.android.material.card.MaterialCardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,5 +1,7 @@
 package com.yut.travelexpense;
 
+import static com.yut.travelexpense.MainActivity.round;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -24,17 +26,20 @@ import java.util.Calendar;
 public class AddTripActivity extends AppCompatActivity {
 
     private EditText edtTxtTripName, edtTxtBudget;
-    private TextView txtHomeCurrency, txtStartDate, txtEndDate, txtTripNameWarning, txtDateWarning;
+    private TextView txtStartDate, txtEndDate, txtHomeCurrency, txtTripNameWarning, txtDateWarning;
     private Button btnAddTrip;
     Toolbar toolbar;
     FloatingActionButton btnHome;
     private static final String TAG = "Add Trip Activity";
 
+    private TripModel tripInProgress;
 
     final Calendar calendar = Calendar.getInstance();
     final int year = calendar.get(Calendar.YEAR);
     final int month = calendar.get(Calendar.MONTH);
     final int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+    CurrencyModel homeCurrency;
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
@@ -43,23 +48,60 @@ public class AddTripActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_trip);
 
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setTitle("Add a new trip");
+
+        homeCurrency = Utils.getInstance(AddTripActivity.this).getHomeCurrency();
+
+        initComponents();
+
+
         Intent intent = getIntent();
+        // From TripListActivity: action = add
+        //      TripRecViewAdapter: action = edit, tripId = id;
+        //      CurrencyRecViewAdapter: action = continue, name, startDate, endDate, budget
+
 
         if (intent != null) {
+            String action = intent.getStringExtra("action");
 
+            if (action.equals("edit") || action.equals("continue")) {
+                if (action.equals("edit")) {
+                    int id = intent.getIntExtra("tripId", -1);
+                    tripInProgress = Utils.getInstance(AddTripActivity.this).searchTripById(id);
+                    if (tripInProgress != null) {
+                        Toast.makeText(this, "budget: " + round(tripInProgress.getBudget(), 0), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "start date: " + tripInProgress.getStartDate().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "end date: " + tripInProgress.getEndDate().toString(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "id: " + tripInProgress.getId(), Toast.LENGTH_SHORT).show();
+                        homeCurrency = tripInProgress.getHomeCurrency();
 
-            toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+                        toolbar.setTitle("Edit Trip");
+                        edtTxtTripName.setText(tripInProgress.getName());
+                        edtTxtBudget.setText(String.valueOf(tripInProgress.getBudget()));
+                        txtStartDate.setText(tripInProgress.getStartDate().format(formatter));
+                        txtEndDate.setText(tripInProgress.getEndDate().format(formatter));
 
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            toolbar.setTitle("Add a new trip");
+                    } else {
+                        Log.d(TAG, "tripInProgress is null");
+                    }
+                } else {// action.equals("continue")
+                    edtTxtTripName.setText(intent.getStringExtra("name"));
+                    txtStartDate.setText(intent.getStringExtra("startDate"));
+                    txtEndDate.setText(intent.getStringExtra("endDate"));
+                    edtTxtBudget.setText(String.valueOf(intent.getDoubleExtra("budget", 0)));
+                }
+            }
 
-            Log.d(TAG, "onCreate");
+            txtHomeCurrency.setText(homeCurrency.getShortName());
 
-            initComponents();
+            setUpClickListeners(action);
 
-            setUpClickListeners(intent);
         } else {
             Log.d(TAG, "Intent is null");
         }
@@ -79,24 +121,8 @@ public class AddTripActivity extends AppCompatActivity {
         btnHome = findViewById(R.id.btnHome);
     }
 
-    private void setUpClickListeners(Intent intent) {
 
-        String action = intent.getStringExtra("action");
-
-        TripModel trip = new TripModel();
-        if (action.equals("edit")) {
-            trip = intent.getParcelableExtra("trip");
-            if (trip != null) {
-                edtTxtTripName.setText(trip.getName());
-                edtTxtBudget.setText(String.valueOf(trip.getBudget()));
-                txtHomeCurrency.setText(trip.getHomeCurrency());
-                txtStartDate.setText(trip.getStartDate().format(formatter));
-                txtEndDate.setText(trip.getEndDate().format(formatter));
-
-                toolbar.setTitle("Edit Trip");
-
-            }
-        }
+    private void setUpClickListeners(String action) {
 
         txtStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,7 +154,41 @@ public class AddTripActivity extends AppCompatActivity {
             }
         });
 
-        TripModel finalTrip = trip;
+        txtHomeCurrency.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(AddTripActivity.this, "home currency clicked", Toast.LENGTH_SHORT).show();
+
+
+                Intent intent = new Intent(AddTripActivity.this, CurrencyActivity.class);
+
+                intent.putExtra("name", edtTxtTripName.getText().toString());
+                intent.putExtra("startDate", txtStartDate.getText().toString());
+                intent.putExtra("endDate", txtEndDate.getText().toString());
+                intent.putExtra("budget", Double.parseDouble(edtTxtBudget.getText().toString()));
+
+                //TODO: better way to communicate
+//                TripModel tempTrip = new TripModel();
+//                tempTrip.setName(edtTxtTripName.getText().toString());
+//                if (!txtStartDate.getText().toString().isBlank()) {
+//                    tempTrip.setStartDate(LocalDate.parse(txtStartDate.getText().toString(), formatter));
+//                }
+//                if (!txtEndDate.getText().toString().isBlank()) {
+//                    tempTrip.setEndDate(LocalDate.parse(txtEndDate.getText().toString(), formatter));
+//                }
+//                if (!edtTxtBudget.getText().toString().isBlank()) {
+//                    tempTrip.setBudget(Double.parseDouble(edtTxtBudget.getText().toString()));
+//                }
+
+//                tempTrip.setHomeCurrency(homeCurrency);
+//                intent.putExtra("trip", tempTrip);
+                intent.putExtra("src", "addTrip");
+                startActivity(intent);
+            }
+        });
+
+
+        TripModel finalTrip = tripInProgress;
         btnAddTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,7 +218,7 @@ public class AddTripActivity extends AppCompatActivity {
                             endDate,
                             Double.parseDouble(edtTxtBudget.getText().toString()),
                             tripId,
-                            txtHomeCurrency.getText().toString(),
+                            homeCurrency,
                             new ArrayList<>(),
                             false,
                             startDate.isBefore(LocalDate.now()) && endDate.isAfter(LocalDate.now()));
@@ -166,13 +226,13 @@ public class AddTripActivity extends AppCompatActivity {
 
 
                     // Add this trip to the list of trips and update the last trip ID if we are not editing an existing trip.
-                    if (action.equals("add")) {
+                    if (action.equals("add") || action.equals("continue")) {
                         Toast.makeText(AddTripActivity.this, "new trip created. ID: " + tripId, Toast.LENGTH_SHORT).show();
 
                         Utils.getInstance(AddTripActivity.this).addTrip(newTrip);
 
                         Utils.getInstance(AddTripActivity.this).setLastTripID(tripId);
-                    } else { //action.equals("edit")
+                    } else if (action.equals("edit")) {
                         Toast.makeText(AddTripActivity.this, "Trip edited. ID: " + tripId, Toast.LENGTH_SHORT).show();
                     }
 
@@ -193,15 +253,6 @@ public class AddTripActivity extends AppCompatActivity {
                                 "Enter a trip name", Toast.LENGTH_SHORT).show();
                     }
                 }
-            }
-        });
-
-        txtHomeCurrency.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO
-//                Intent intent = new Intent(AddTripActivity.this, UnitsActivity.class);
-//                startActivity(intent);
             }
         });
 
