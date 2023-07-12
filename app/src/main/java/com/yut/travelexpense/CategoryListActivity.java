@@ -120,6 +120,9 @@ public class CategoryListActivity extends AppCompatActivity {
         return true;
     }
 
-
-
+    //TODO
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 }

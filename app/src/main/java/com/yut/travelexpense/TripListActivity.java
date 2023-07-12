@@ -1,5 +1,6 @@
 package com.yut.travelexpense;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -8,15 +9,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Objects;
 
 public class TripListActivity extends AppCompatActivity implements TripsApi {
@@ -25,6 +26,7 @@ public class TripListActivity extends AppCompatActivity implements TripsApi {
     TextView txtNoTrip;
     ArrayList<TripModel> trips = new ArrayList<>();
     private Toolbar toolbar;
+    MenuItem menuItemMap;
     FloatingActionButton floatingBtn;
 
     private static final String TAG = "Trip List Activity";
@@ -66,6 +68,25 @@ public class TripListActivity extends AppCompatActivity implements TripsApi {
             tripsRecView.setAdapter(adapter);
             tripsRecView.setLayoutManager(new LinearLayoutManager(this));
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+
+        menuItemMap = menu.findItem(R.id.menuItemMap);
+        menuItemMap.setVisible(true).setEnabled(true);
+
+        menuItemMap.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(@NonNull MenuItem item) {
+                Intent intent = new Intent(TripListActivity.this, WorldMapActivity.class);
+                startActivity(intent);
+                return true;
+            }
+        });
+
+        return true;
     }
 
     private void initComponents() {

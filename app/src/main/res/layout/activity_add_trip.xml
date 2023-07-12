@@ -7,129 +7,213 @@
     tools:context=".AddTripActivity">
 
     <include
-        layout="@layout/toolbar"
-        android:id="@+id/toolbar"/>
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline8"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardTripName"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="50dp" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Trip Name"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/edtTxtTripName"
-        app:layout_constraintStart_toStartOf="@+id/guideline8" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Date"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/txtStartDate"
-        app:layout_constraintStart_toStartOf="@+id/guideline8" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="End Date"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/txtEndDate"
-        app:layout_constraintStart_toStartOf="@+id/guideline8" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Home Currency"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/txtHomeCurrency"
-        app:layout_constraintStart_toStartOf="@+id/guideline8" />
-
-    <TextView
-        android:id="@+id/textView5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Budget"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/edtTxtBudget"
-        app:layout_constraintStart_toStartOf="@+id/guideline8" />
-
-    <EditText
-        android:id="@+id/edtTxtTripName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:ems="10"
-        android:inputType="text"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/txtStartDate"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="60dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.64"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:strokeColor="@color/orange"
+        app:cardCornerRadius="10dp"
+        android:elevation="10dp"
+        app:strokeWidth="3dp">
 
-    <TextView
-        android:id="@+id/txtStartDate"
-        android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Trip Name"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/edtTxtTripName"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="130dp"
+                android:background="@null"
+                android:hint="Enter Trip Name"
+                android:inputType="text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="TouchTargetSizeCheck" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardBudget"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:ems="10"
-        android:inputType="date"
-        android:gravity="bottom"
-        android:minHeight="48dp"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/txtEndDate"
-        app:layout_constraintStart_toStartOf="@+id/edtTxtTripName" />
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardTripName"
+        app:strokeColor="@color/orange"
+        app:cardCornerRadius="10dp"
+        android:elevation="10dp"
+        app:strokeWidth="3dp">
 
-    <TextView
-        android:id="@+id/txtEndDate"
-        android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="Budget"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/edtTxtBudget"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/edtTxtBudget" />
+
+            <EditText
+                android:id="@+id/edtTxtBudget"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="130dp"
+                android:background="@null"
+                android:hint="Enter Budget"
+                android:inputType="numberDecimal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardStartDate"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:ems="10"
-        android:inputType="date"
-        android:gravity="bottom"
-        android:minHeight="48dp"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/txtHomeCurrency"
-        app:layout_constraintStart_toStartOf="@+id/edtTxtTripName" />
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="80dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardBudget"
+        app:strokeColor="@color/orange"
+        app:cardCornerRadius="10dp"
+        android:elevation="10dp"
+        app:strokeWidth="3dp">
 
-    <TextView
-        android:id="@+id/txtHomeCurrency"
-        android:layout_width="200dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="32dp"
-        android:gravity="bottom"
-        android:text="Select a currency"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/edtTxtBudget"
-        app:layout_constraintStart_toStartOf="@+id/txtEndDate" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/edtTxtBudget"
-        android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start Date"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_margin="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+            <TextView
+                android:id="@+id/txtStartDate"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:hint="Start Date"
+                android:textSize="20sp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="130dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardEndDate"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
-        android:ems="10"
-        android:inputType="numberDecimal"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toTopOf="@+id/btnAddTrip"
-        app:layout_constraintStart_toStartOf="@+id/txtEndDate" />
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardStartDate"
+        app:strokeColor="@color/orange"
+        app:cardCornerRadius="10dp"
+        android:elevation="10dp"
+        app:strokeWidth="3dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End Date"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_margin="10dp"
+                />
+
+            <TextView
+                android:id="@+id/txtEndDate"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:hint="End Date"
+                android:textSize="20sp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="130dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+
 
     <Button
         android:id="@+id/btnAddTrip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="120dp"
         android:text="ADD TRIP"
+        android:backgroundTint="@color/orange"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -139,26 +223,68 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="*Trip Name Required"
-        android:textSize="12sp"
         android:visibility="gone"
         android:textColor="@color/red"
-        app:layout_constraintStart_toStartOf="@+id/edtTxtTripName"
-        app:layout_constraintTop_toBottomOf="@+id/edtTxtTripName" />
+        android:textSize="12sp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="@id/cardTripName"
+        app:layout_constraintTop_toBottomOf="@id/cardTripName" />
 
-    <TextView
-        android:id="@+id/txtDateWarning"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="*Start date is after the end date"
-        android:textSize="12sp"
-        android:visibility="gone"
-        android:textColor="@color/red"
-        app:layout_constraintStart_toStartOf="@+id/txtStartDate"
-        app:layout_constraintTop_toBottomOf="@+id/txtStartDate" />
 
     <include
+        android:id="@+id/include"
         layout="@layout/home_button"
         tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="16dp" />
+        tools:layout_editor_absoluteY="0dp" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/cardEndDate"
+        android:layout_margin="20dp"
+        app:strokeColor="@color/grey"
+        app:strokeWidth="3dp"
+        app:cardCornerRadius="10dp"
+        android:elevation="10dp"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/txtLengthSummary"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trip Duration:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="10dp"
+                />
+
+            <TextView
+                android:id="@+id/txtBudgetSummary"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Daily Budget: "
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/txtLengthSummary"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginStart="10dp"
+                />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

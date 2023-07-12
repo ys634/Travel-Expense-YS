@@ -1,7 +1,8 @@
 package com.yut.travelexpense;
 
-import static com.yut.travelexpense.MainActivity.round;
-import static com.yut.travelexpense.MainActivity.today;
+import static com.yut.travelexpense.Utils.removeZero;
+import static com.yut.travelexpense.Utils.today;
+import static com.yut.travelexpense.Utils.round;
 
 import android.os.Bundle;
 
@@ -16,8 +17,6 @@ import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -101,7 +100,9 @@ public class StatsFragment extends Fragment {
         double totalSpent = 0, avgSpent, dailyBudget, budget = currentTrip.getBudget(), surplus;
 
         for (Transaction t : transactions) {
-            totalSpent = totalSpent + t.getConvertedAmount();
+            if (!t.getNoStats()) {
+                totalSpent = totalSpent + Utils.getInstance(getContext()).convertToHomeCurrency(t.getOriginalAmount(), t.getCurrency(), 2);
+            }
         }
 
         double daysPassed, daysLeft, duration;
@@ -124,10 +125,10 @@ public class StatsFragment extends Fragment {
 
         dailyBudget = round((budget - totalSpent) / daysLeft, 2);
 
-        String spentOverBudget = "$" + round(totalSpent, 2) + "/ $" + budget;
-        String strAvgSpent = "$" + avgSpent;
-        String strDailyBudget = "$" + dailyBudget;
-        String strSurplus = "$" + surplus;
+        String spentOverBudget = "$" + removeZero(round(totalSpent, 2)) + "/ $" + removeZero(budget);
+        String strAvgSpent = "$" + removeZero(avgSpent);
+        String strDailyBudget = "$" + removeZero(dailyBudget);
+        String strSurplus = "$" + removeZero(surplus);
 
         txtMoneySpent.setText(spentOverBudget);
         txtAvgSpent.setText(strAvgSpent);

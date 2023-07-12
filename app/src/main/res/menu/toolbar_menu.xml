@@ -23,14 +23,38 @@
         android:icon="@drawable/ic_edit"
         android:visible="false"/>
 
+
     <item
-        android:id="@+id/menuItemMore"
-        android:title="More"
-        android:icon="@drawable/ic_three_dots"
-        app:showAsAction="always"/>
+        android:id="@+id/menuItemMap"
+        android:title="Map"
+        android:icon="@drawable/ic_earth"
+        app:showAsAction="always"
+        android:visible="false"
+        />
 
+    <item
+        android:id="@+id/changeTheme"
+        android:title="Change Theme"
+        app:showAsAction="never">
 
+        <menu>
+            <item
+                android:id="@+id/darkTheme"
+                android:title="Dark Theme"/>
+            <item
+                android:id="@+id/lightTheme"
+                android:title="Light Theme"/>
+            <item
+                android:id="@+id/sameTheme"
+                android:title="Same as Device"/>
+        </menu>
+    </item>
 
+    <item
+        android:id="@+id/changeHomeCurrency"
+        android:title="Home Currency"
+        app:showAsAction="never"
+        />
 
 
 </menu>

@@ -1,6 +1,8 @@
 package com.yut.travelexpense;
 
-import static com.yut.travelexpense.MainActivity.round;
+import static com.yut.travelexpense.Utils.formatter;
+import static com.yut.travelexpense.Utils.removeZero;
+import static com.yut.travelexpense.Utils.round;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -27,7 +29,6 @@ public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapte
     Context context;
     ArrayList<TripModel> tripModels;
     private static TripsApi tripsApi;
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     public TripsRecViewAdapter(Context context, ArrayList<TripModel> tripModels) {
         this.context = context;
@@ -59,24 +60,32 @@ public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapte
         double totalSpent = 0.00;
         ArrayList<Transaction> transactions = tripSelected.getTransactions();
         for (Transaction t: transactions) {
-            totalSpent += t.getConvertedAmount();
+            if (!t.getNoStats()) {
+                totalSpent += Utils.getInstance(context).convertToHomeCurrency(t.getOriginalAmount(), t.getCurrency(), 2);
+            }
         }
 
-        String spentOverBudget = round(totalSpent, 2) + "/" + String.valueOf(tripSelected.getBudget());
+
+        String spentOverBudget = Utils.getInstance(context).getHomeCurrency().getSymbol() +
+                " " +
+                removeZero(round(totalSpent, 2)) +
+                "/" +
+                Utils.getInstance(context).getHomeCurrency().getSymbol() +
+                " " +
+                removeZero(tripSelected.getBudget());
 
 
         holder.txtTripName.setText(tripSelected.getName());
         holder.txtBudget.setText(spentOverBudget);
-        holder.txtCurrency.setText(tripSelected.getHomeCurrency().getShortName());
+        holder.txtCountriesVisited.setText("Costa Rica");
         holder.txtDuration.setText(dateText);
 
         holder.icEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(context, "Before start date: " + tripSelected.getStartDate(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Trip ID: " + tripSelected.getId(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(context, AddTripActivity.class);
                 intent.putExtra("tripId", tripSelected.getId());
-//                intent.putExtra("trip", tripSelected);
                 intent.putExtra("action", "edit");
 
                 context.startActivity(intent);
@@ -134,7 +143,7 @@ public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapte
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView txtTripName, txtDuration, txtCurrency, txtBudget;
+        TextView txtTripName, txtDuration, txtBudget, txtCountriesVisited;
         ImageView icDelete, icEdit;
         ConstraintLayout tripParent;
         public MyViewHolder(@NonNull View itemView) {
@@ -142,8 +151,8 @@ public class TripsRecViewAdapter extends RecyclerView.Adapter<TripsRecViewAdapte
 
             txtTripName = itemView.findViewById(R.id.txtTripName);
             txtDuration = itemView.findViewById(R.id.txtDuration);
-            txtCurrency = itemView.findViewById(R.id.txtCurrency);
             txtBudget = itemView.findViewById(R.id.txtBudget);
+            txtCountriesVisited = itemView.findViewById(R.id.txtCountriesVisited);
             tripParent = itemView.findViewById(R.id.tripParent);
             icDelete = itemView.findViewById(R.id.icDelete);
             icEdit = itemView.findViewById(R.id.icEdit);

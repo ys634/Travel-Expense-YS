@@ -10,16 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.anychart.core.gauge.pointers.Bar;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -64,7 +58,7 @@ public class BarChartFragment extends Fragment {
         List<BarEntry> barEntries = new ArrayList<>();
         for (Transaction t: transactions) {
             LocalDate date = t.getDate();
-            double amount = t.getOriginalAmount();
+            double amount = Utils.getInstance(getContext()).convertToHomeCurrency(t.getOriginalAmount(), t.getCurrency(), 2);
 
 
             boolean groupExists = false;

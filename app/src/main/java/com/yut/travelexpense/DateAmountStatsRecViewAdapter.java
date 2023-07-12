@@ -13,7 +13,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class DateAmountStatsRecViewAdapter  extends RecyclerView.Adapter<DateAmountStatsRecViewAdapter.MyViewHolder> {
 
@@ -38,8 +37,10 @@ public class DateAmountStatsRecViewAdapter  extends RecyclerView.Adapter<DateAmo
     public void onBindViewHolder(@NonNull DateAmountStatsRecViewAdapter.MyViewHolder holder, int position) {
 
         DateAmountStatsModel currentStats = dateAmountStatsModels.get(position);
+        String dateTotal = Utils.getInstance(context).getHomeCurrency().getSymbol() + " " +
+                String.valueOf(currentStats.getAmount());
         holder.txtDate.setText(currentStats.getDate().toString());
-        holder.txtDateTotal.setText(String.valueOf(currentStats.getAmount()));
+        holder.txtDateTotal.setText(dateTotal);
 
         holder.dateAmountStatsParent.setOnClickListener(new View.OnClickListener() {
             @Override

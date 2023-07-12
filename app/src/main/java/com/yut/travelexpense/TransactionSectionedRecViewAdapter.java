@@ -1,8 +1,9 @@
 package com.yut.travelexpense;
 
-import static com.yut.travelexpense.MainActivity.round;
+import static com.yut.travelexpense.Utils.round;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.anychart.enums.GanttRangeAnchor;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -87,13 +90,15 @@ implements Filterable {
             LocalDate header = sections.get(sectionIndex).getHeader();
             Double total = 0.00;
             for (Transaction t: transactions) {
-                total += t.getConvertedAmount();
+                total += Utils.getInstance(context).convertToHomeCurrency(t.getOriginalAmount(), t.getCurrency(), 2);
             }
 
             DateTimeFormatter sectionFormatter = DateTimeFormatter.ofPattern("EEEE, MMMM dd");
 
+            String sectionTotal = Utils.getInstance(context).getHomeCurrency().getSymbol() + " "
+                    + round(total, 2);
             txtSectionDate.setText(header.format(sectionFormatter));
-            txtSectionTotal.setText(String.valueOf(round(total, 2)));
+            txtSectionTotal.setText(sectionTotal);
 
         } else {
 
@@ -138,9 +143,9 @@ implements Filterable {
                     break;
             }
 
-            String amountInOriginalCurrency = transactionSelected.getCurrency() + String.valueOf(transactionSelected.getOriginalAmount());
-            String amountInHomeCurrency = Utils.getInstance(context).getHomeCurrencyOfCurrentTrip().getSymbol() + " " +
-                    transactionSelected.getConvertedAmount();
+            String amountInOriginalCurrency = transactionSelected.getCurrency() + round(transactionSelected.getOriginalAmount(), 2);
+            String amountInHomeCurrency = Utils.getInstance(context).getHomeCurrency().getSymbol() + "" +
+                    Utils.getInstance(context).convertToHomeCurrency(transactionSelected.getOriginalAmount(), transactionSelected.getCurrency(), 2);
 
 
             txtCategory.setText(transactionSelected.getCategory());
@@ -148,6 +153,13 @@ implements Filterable {
             txtOriginalAmount.setText(amountInOriginalCurrency);
             txtConvertedAmount.setText(amountInHomeCurrency);
             imgCategory.setImageResource(image);
+
+            if (transactionSelected.getNoStats()) {
+                txtCategory.setTextColor(Color.GRAY);
+                txtDescription.setTextColor(Color.GRAY);
+                txtConvertedAmount.setTextColor(Color.GRAY);
+                txtOriginalAmount.setTextColor(Color.GRAY);
+            }
 
             transactionParent.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -158,7 +170,6 @@ implements Filterable {
                     Bundle bundle = new Bundle();
                     bundle.putString("action", "edit");
                     bundle.putInt("transactionId", transactionSelected.getId());
-//                bundle.putParcelable("transaction", transactionSelected);
                     AppCompatActivity activity = (AppCompatActivity)view.getContext();
                     EntryFragment fragment = new EntryFragment();
                     fragment.setArguments(bundle);
@@ -283,10 +294,6 @@ implements Filterable {
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
         public View rootView;
-
-        TextView txtCategory, txtDescription, txtConvertedAmount, txtOriginalAmount;
-        ConstraintLayout transactionParent;
-        ImageView imgCategory;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);

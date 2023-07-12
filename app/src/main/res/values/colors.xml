@@ -7,15 +7,24 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="off_white">#D3D3D3</color>
     <color name="beige">#EEE1C6</color>
     <color name="bittersweet">#fe6f5e </color>
+    <color name="orange">#ffa500</color>
+    <color name="terracotta">#E67E22</color>
+    <color name="burnt_orange">#D35400</color>
+    <color name="pumpkin_orange">#FF6600</color>
     <color name="light_orange">#99FFCC</color>
     <color name="topaz">#ffc87c</color>
     <color name="peach_orange">#ffcc99</color>
-    <color name="orange">#ffa500</color>
     <color name="red">#D32F2F</color>
     <color name="orange_comp">#005AFF</color>
     <color name="grey">#808080</color>
     <color name="light_grey">#d3d3d3</color>
+    <color name="white_to_black">#FFFFFFFF</color>
+    <color name="lightOrange_to_orange">#99FFCC</color>
+    <color name="black_to_orange">#FF000000</color>
+    <color name="peach_to_terracotta">#ffcc99</color>
+    <color name="black_to_terracotta">#FF000000</color>
     
 </resources>

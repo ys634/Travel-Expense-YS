@@ -1,6 +1,5 @@
 package com.yut.travelexpense;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,14 +7,15 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.versionedparcelable.ParcelUtils;
 
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +37,7 @@ public class TransactionListFragment extends Fragment {
     RecyclerView transactionListRecView;
     FloatingActionButton floatingBtn;
     TextView txtNoTransaction;
+    ImageView imgDownArrow;
     TransactionSectionedRecViewAdapter adapter;
     SearchView searchView;
     MenuItem searchItem;
@@ -88,24 +89,47 @@ public class TransactionListFragment extends Fragment {
         transactionListRecView = view.findViewById(R.id.transactionListRecView);
 
         txtNoTransaction = view.findViewById(R.id.txtNoTransaction);
+        imgDownArrow = view.findViewById(R.id.imgDownArrow);
 
         transactions = Utils.getInstance(getContext()).getAllTransactions();
-
-        if (src.equals("pie")) {
-            String groupName = bundle.getString("sortBy");
-
-            transactions.removeIf(t -> !t.getCategory().equals(groupName));
-        } else if (src.equals("bar")) {
-            LocalDate date = LocalDate.ofEpochDay(bundle.getLong("sortBy"));
-
-            transactions.removeIf(t -> !t.getDate().isEqual(date));
-        }
+        List<Transaction> tempTransactions = new ArrayList<>();
 
         if (transactions != null) {
             if (transactions.size() != 0) {
+                for (int i = 0; i < transactions.size(); i++) {
+                    Transaction t = transactions.get(i);
+                    long span = t.getSpread();
+                    if (span > 1) {
+                        t.setOriginalAmount(t.getOriginalAmount()/span);
+                        for(int j = 1; j < span; j++) {
+                            Transaction duplicate = new Transaction(t);
+                            duplicate.setDate(duplicate.getDate().plusDays(j));
+                            duplicate.setOriginalAmount(t.getOriginalAmount());
+                            tempTransactions.add(duplicate);
+                        }
+
+                    }
+
+                    tempTransactions.add(t);
+                }
+
+//                for (Transaction t: tempTransactions) {
+//                    Toast.makeText(getContext(), "date: " + t.getDate(), Toast.LENGTH_SHORT).show();
+//                }
+
+                if (src.equals("pie")) {
+                    String groupName = bundle.getString("sortBy");
+
+                    tempTransactions.removeIf(t -> !t.getCategory().equals(groupName));
+                } else if (src.equals("bar")) {
+                    LocalDate date = LocalDate.ofEpochDay(bundle.getLong("sortBy"));
+
+                    tempTransactions.removeIf(t -> !t.getDate().isEqual(date));
+                }
+
 
                 Map<LocalDate, List<Transaction>> transactionsByDate = new TreeMap<>();
-                for (Transaction t: transactions) {
+                for (Transaction t: tempTransactions) {
                     LocalDate date = t.getDate();
                     if (!transactionsByDate.containsKey(date)) {
                         transactionsByDate.put(date, new ArrayList<>());
@@ -120,15 +144,15 @@ public class TransactionListFragment extends Fragment {
                 Collections.sort(sections);
 
                 txtNoTransaction.setVisibility(View.GONE);
+                imgDownArrow.setVisibility(View.GONE);
 
                 adapter = new TransactionSectionedRecViewAdapter(getActivity(), sections);
-//                adapter = new TransactionRecViewAdapter(getActivity(), transactions);
-
 
                 transactionListRecView.setAdapter(adapter);
                 transactionListRecView.setLayoutManager(new LinearLayoutManager(getActivity()));
             } else {
                 txtNoTransaction.setVisibility(View.VISIBLE);
+                imgDownArrow.setVisibility(View.VISIBLE);
             }
         }
 

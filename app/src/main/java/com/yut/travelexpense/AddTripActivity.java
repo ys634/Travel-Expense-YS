@@ -1,13 +1,21 @@
 package com.yut.travelexpense;
 
-import static com.yut.travelexpense.MainActivity.round;
+import static com.yut.travelexpense.Utils.convertNumberToMonth;
+import static com.yut.travelexpense.Utils.formatter;
+import static com.yut.travelexpense.Utils.removeZero;
+import static com.yut.travelexpense.Utils.round;
+import static com.yut.travelexpense.Utils.today;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.util.Consumer;
+import androidx.core.util.Pair;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,17 +24,33 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.jakewharton.rxbinding.widget.RxTextView;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.chrono.ChronoLocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
+
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class AddTripActivity extends AppCompatActivity {
 
     private EditText edtTxtTripName, edtTxtBudget;
-    private TextView txtStartDate, txtEndDate, txtHomeCurrency, txtTripNameWarning, txtDateWarning;
+    private TextView txtStartDate, txtEndDate, txtTripNameWarning, txtLengthSummary, txtBudgetSummary;
     private Button btnAddTrip;
     Toolbar toolbar;
     FloatingActionButton btnHome;
@@ -41,7 +65,6 @@ public class AddTripActivity extends AppCompatActivity {
 
     CurrencyModel homeCurrency;
 
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,50 +83,59 @@ public class AddTripActivity extends AppCompatActivity {
 
         initComponents();
 
-
         Intent intent = getIntent();
         // From TripListActivity: action = add
         //      TripRecViewAdapter: action = edit, tripId = id;
         //      CurrencyRecViewAdapter: action = continue, name, startDate, endDate, budget
 
 
-        if (intent != null) {
-            String action = intent.getStringExtra("action");
-
-            if (action.equals("edit") || action.equals("continue")) {
-                if (action.equals("edit")) {
-                    int id = intent.getIntExtra("tripId", -1);
-                    tripInProgress = Utils.getInstance(AddTripActivity.this).searchTripById(id);
-                    if (tripInProgress != null) {
-                        Toast.makeText(this, "budget: " + round(tripInProgress.getBudget(), 0), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(this, "start date: " + tripInProgress.getStartDate().toString(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(this, "end date: " + tripInProgress.getEndDate().toString(), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(this, "id: " + tripInProgress.getId(), Toast.LENGTH_SHORT).show();
-                        homeCurrency = tripInProgress.getHomeCurrency();
-
-                        toolbar.setTitle("Edit Trip");
-                        edtTxtTripName.setText(tripInProgress.getName());
-                        edtTxtBudget.setText(String.valueOf(tripInProgress.getBudget()));
-                        txtStartDate.setText(tripInProgress.getStartDate().format(formatter));
-                        txtEndDate.setText(tripInProgress.getEndDate().format(formatter));
-
-                    } else {
-                        Log.d(TAG, "tripInProgress is null");
-                    }
-                } else {// action.equals("continue")
-                    edtTxtTripName.setText(intent.getStringExtra("name"));
-                    txtStartDate.setText(intent.getStringExtra("startDate"));
-                    txtEndDate.setText(intent.getStringExtra("endDate"));
-                    edtTxtBudget.setText(String.valueOf(intent.getDoubleExtra("budget", 0)));
-                }
-            }
-
-            txtHomeCurrency.setText(homeCurrency.getShortName());
-
-            setUpClickListeners(action);
+        if (intent == null) {
+            Log.d(TAG, "Intent is null");
 
         } else {
-            Log.d(TAG, "Intent is null");
+            String action = intent.getStringExtra("action");
+
+            setUpClickListeners(action);
+//            setUpTextChangedListeners();
+            setUpTypeListeners();
+
+//            if (action.equals("edit") || action.equals("continue")) {
+
+            long duration = 7;
+            double dailyBudget = 0;
+
+            if (action.equals("edit")) {
+                int id = intent.getIntExtra("tripId", -1);
+                tripInProgress = Utils.getInstance(AddTripActivity.this).searchTripById(id);
+                if (tripInProgress != null) {
+                    Toast.makeText(this, "id: " + tripInProgress.getId(), Toast.LENGTH_SHORT).show();
+
+                    toolbar.setTitle("Edit Trip");
+                    btnAddTrip.setText("Edit Trip");
+                    edtTxtTripName.setText(tripInProgress.getName());
+                    edtTxtBudget.setText(String.valueOf(tripInProgress.getBudget()));
+                    txtStartDate.setText(tripInProgress.getStartDate().format(formatter));
+                    txtEndDate.setText(tripInProgress.getEndDate().format(formatter));
+                    duration = ChronoUnit.DAYS.between(tripInProgress.getStartDate(),
+                            tripInProgress.getEndDate()) + 1;
+
+                } else {
+                    Log.d(TAG, "tripInProgress is null");
+                }
+//                } else {// action.equals("continue")
+//                    edtTxtTripName.setText(intent.getStringExtra("name"));
+//                    txtStartDate.setText(intent.getStringExtra("startDate"));
+//                    txtEndDate.setText(intent.getStringExtra("endDate"));
+//                    edtTxtBudget.setText(String.valueOf(intent.getDoubleExtra("budget", 0)));
+            } else {
+                txtStartDate.setText(today.format(formatter));
+                txtEndDate.setText(today.plusDays(6).format(formatter));
+            }
+            txtLengthSummary.setText("Trip length: " + duration + " days");
+
+            setUpClickListeners(action);
+            setUpTypeListeners();
+
         }
     }
 
@@ -114,76 +146,102 @@ public class AddTripActivity extends AppCompatActivity {
         txtStartDate = findViewById(R.id.txtStartDate);
         txtEndDate = findViewById(R.id.txtEndDate);
         edtTxtBudget = findViewById(R.id.edtTxtBudget);
-        txtHomeCurrency = findViewById(R.id.txtHomeCurrency);
         btnAddTrip = findViewById(R.id.btnAddTrip);
         txtTripNameWarning = findViewById(R.id.txtTripNameWarning);
-        txtDateWarning = findViewById(R.id.txtDateWarning);
         btnHome = findViewById(R.id.btnHome);
-    }
+        txtLengthSummary = findViewById(R.id.txtLengthSummary);
+        txtBudgetSummary = findViewById(R.id.txtBudgetSummary);
 
+    }
 
     private void setUpClickListeners(String action) {
 
         txtStartDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerDialog dialog = new DatePickerDialog(AddTripActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int y, int m, int d) {
-                        String date = m + 1 + "/" + d + "/" + y;
-                        txtStartDate.setText(date);
+                MaterialDatePicker<Pair<Long, Long>> datePicker = MaterialDatePicker.Builder.dateRangePicker()
+                        .setSelection(Pair.create(LocalDateTime.of
+                                        (LocalDate.parse(txtStartDate.getText().toString(), formatter),
+                                                LocalTime.NOON).atOffset(ZoneOffset.UTC).toInstant().toEpochMilli(),
+                                LocalDateTime.of
+                                        (LocalDate.parse(txtEndDate.getText().toString(), formatter),
+                                                LocalTime.NOON).atOffset(ZoneOffset.UTC).toInstant().toEpochMilli()))
+                        .build();
 
+                datePicker.show(getSupportFragmentManager(), "Material_date_picker");
+
+                datePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
+                    @Override
+                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                        TimeZone timeZoneUTC = TimeZone.getDefault();
+                        int offsetFromUTC = timeZoneUTC.getOffset(new Date().getTime()) * -1;
+                        SimpleDateFormat simpleFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+                        Date startDate = new Date(selection.first + offsetFromUTC);
+                        Date endDate = new Date(selection.second + offsetFromUTC);
+
+                        txtStartDate.setText(simpleFormat.format(startDate));
+                        txtEndDate.setText(simpleFormat.format(endDate));
+
+                        long duration = TimeUnit.DAYS.convert(endDate.getTime() - startDate.getTime() + 1, TimeUnit.MILLISECONDS) + 1;
+                        String durationText = "Duration of trip: " + duration + " days";
+
+                        txtLengthSummary.setText(durationText);
+
+                        if (!edtTxtBudget.getText().toString().isBlank()) {
+                            long dailyBudget = Long.parseLong(edtTxtBudget.getText().toString()) / duration;
+                            String budgetText = "Daily Budget: $" + dailyBudget;
+                            txtBudgetSummary.setText(budgetText);
+                        }
                     }
-                }, year, month, day);
-                dialog.show();
+                });
             }
         });
+
+
 
         txtEndDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DatePickerDialog dialog = new DatePickerDialog(AddTripActivity.this, new DatePickerDialog.OnDateSetListener() {
+                MaterialDatePicker<Pair<Long, Long>> datePicker = MaterialDatePicker.Builder.dateRangePicker()
+                        .setSelection(Pair.create(
+                                LocalDateTime.of
+                                        (LocalDate.parse(txtStartDate.getText().toString(), formatter),
+                                                LocalTime.NOON).
+                                        atOffset(ZoneOffset.UTC).toInstant().toEpochMilli(),
+                                LocalDateTime.of
+                                        (LocalDate.parse(txtEndDate.getText().toString(), formatter),
+                                                LocalTime.NOON).
+                                        atOffset(ZoneOffset.UTC).toInstant().toEpochMilli()))
+                        .build();
+
+                datePicker.show(getSupportFragmentManager(), "Material_date_picker");
+
+                datePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
                     @Override
-                    public void onDateSet(DatePicker datePicker, int y, int m, int d) {
-                        String date = m + 1 + "/" + d + "/" + y;
-                        txtEndDate.setText(date);
+                    public void onPositiveButtonClick(Pair<Long, Long> selection) {
+                        TimeZone timeZoneUTC = TimeZone.getDefault();
+                        int offsetFromUTC = timeZoneUTC.getOffset(new Date().getTime()) * -1;
+                        SimpleDateFormat simpleFormat = new SimpleDateFormat("MMMM d, yyyy", Locale.US);
+                        Date startDate = new Date(selection.first + offsetFromUTC);
+                        Date endDate = new Date(selection.second + offsetFromUTC);
+
+                        txtStartDate.setText(simpleFormat.format(startDate));
+                        txtEndDate.setText(simpleFormat.format(endDate));
+
+                        long duration = TimeUnit.DAYS.convert(endDate.getTime() - startDate.getTime() + 1, TimeUnit.MILLISECONDS) + 1;
+                        String durationText = "Duration of trip: " + duration + " days";
+
+                        txtLengthSummary.setText(durationText);
+
+                        if (!edtTxtBudget.getText().toString().isBlank()) {
+                            long dailyBudget = Long.parseLong(edtTxtBudget.getText().toString()) / duration;
+                            String budgetText = "Daily Budget: $" + dailyBudget;
+                            txtBudgetSummary.setText(budgetText);
+                        }
+
 
                     }
-                }, year, month, day);
-                dialog.show();
-            }
-        });
-
-        txtHomeCurrency.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(AddTripActivity.this, "home currency clicked", Toast.LENGTH_SHORT).show();
-
-
-                Intent intent = new Intent(AddTripActivity.this, CurrencyActivity.class);
-
-                intent.putExtra("name", edtTxtTripName.getText().toString());
-                intent.putExtra("startDate", txtStartDate.getText().toString());
-                intent.putExtra("endDate", txtEndDate.getText().toString());
-                intent.putExtra("budget", Double.parseDouble(edtTxtBudget.getText().toString()));
-
-                //TODO: better way to communicate
-//                TripModel tempTrip = new TripModel();
-//                tempTrip.setName(edtTxtTripName.getText().toString());
-//                if (!txtStartDate.getText().toString().isBlank()) {
-//                    tempTrip.setStartDate(LocalDate.parse(txtStartDate.getText().toString(), formatter));
-//                }
-//                if (!txtEndDate.getText().toString().isBlank()) {
-//                    tempTrip.setEndDate(LocalDate.parse(txtEndDate.getText().toString(), formatter));
-//                }
-//                if (!edtTxtBudget.getText().toString().isBlank()) {
-//                    tempTrip.setBudget(Double.parseDouble(edtTxtBudget.getText().toString()));
-//                }
-
-//                tempTrip.setHomeCurrency(homeCurrency);
-//                intent.putExtra("trip", tempTrip);
-                intent.putExtra("src", "addTrip");
-                startActivity(intent);
+                });
             }
         });
 
@@ -193,15 +251,11 @@ public class AddTripActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                LocalDate startDate;
-                LocalDate endDate;
+                LocalDate startDate = LocalDate.parse(txtStartDate.getText().toString(), formatter);
+                LocalDate endDate = LocalDate.parse(txtEndDate.getText().toString(), formatter);
 
-                startDate = LocalDate.parse(txtStartDate.getText().toString(), formatter);
-                endDate = LocalDate.parse(txtEndDate.getText().toString(), formatter);
-
-                if (startDate.isBefore(endDate) && !edtTxtTripName.getText().toString().isBlank()) {
+                if (!edtTxtTripName.getText().toString().isBlank()) {
                     // The trip has valid dates entered and trip name is not blank
-                    txtDateWarning.setVisibility(View.GONE);
                     txtTripNameWarning.setVisibility(View.GONE);
 
                     int tripId;
@@ -218,40 +272,33 @@ public class AddTripActivity extends AppCompatActivity {
                             endDate,
                             Double.parseDouble(edtTxtBudget.getText().toString()),
                             tripId,
-                            homeCurrency,
                             new ArrayList<>(),
                             false,
-                            startDate.isBefore(LocalDate.now()) && endDate.isAfter(LocalDate.now()));
-
+                            startDate.isBefore(today) && endDate.isAfter(LocalDate.now()));
 
 
                     // Add this trip to the list of trips and update the last trip ID if we are not editing an existing trip.
                     if (action.equals("add") || action.equals("continue")) {
                         Toast.makeText(AddTripActivity.this, "new trip created. ID: " + tripId, Toast.LENGTH_SHORT).show();
 
-                        Utils.getInstance(AddTripActivity.this).addTrip(newTrip);
-
                         Utils.getInstance(AddTripActivity.this).setLastTripID(tripId);
                     } else if (action.equals("edit")) {
                         Toast.makeText(AddTripActivity.this, "Trip edited. ID: " + tripId, Toast.LENGTH_SHORT).show();
+                        Utils.getInstance(AddTripActivity.this).removeTrip(finalTrip);
                     }
+
+                    Utils.getInstance(AddTripActivity.this).addTrip(newTrip);
+
 
                     Intent intent = new Intent(AddTripActivity.this, TripListActivity.class);
                     startActivity(intent);
 
                 } else {
 
-                    if (startDate.isAfter(endDate)) {
-                        txtDateWarning.setVisibility(View.VISIBLE);
-                        Toast.makeText(AddTripActivity.this,
-                                "Start date has to be before the end date", Toast.LENGTH_SHORT).show();
-                    }
+                    txtTripNameWarning.setVisibility(View.VISIBLE);
+                    Toast.makeText(AddTripActivity.this,
+                            "Enter a trip name", Toast.LENGTH_SHORT).show();
 
-                    if (edtTxtTripName.getText().toString().isBlank()) {
-                        txtTripNameWarning.setVisibility(View.VISIBLE);
-                        Toast.makeText(AddTripActivity.this,
-                                "Enter a trip name", Toast.LENGTH_SHORT).show();
-                    }
                 }
             }
         });
@@ -263,6 +310,32 @@ public class AddTripActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+    }
+
+    private void setUpTypeListeners() {
+
+        RxTextView.textChanges(edtTxtBudget)
+                .debounce(1, TimeUnit.SECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(textChanged -> {
+                    String budgetText = "";
+                    String inputText = edtTxtBudget.getText().toString().trim();
+
+                    if (!inputText.isBlank() && inputText.matches("\\d+(\\.\\d+)?")) {
+                        LocalDate startDate = LocalDate.parse(txtStartDate.getText(), formatter);
+                        LocalDate endDate = LocalDate.parse(txtEndDate.getText(), formatter);
+                        double dailyBudget = Double.parseDouble(edtTxtBudget.getText().toString()) /
+                                (ChronoUnit.DAYS.between(startDate, endDate) + 1);
+                        budgetText = "Daily Budget: $" + removeZero(round(dailyBudget, 2));
+                    } else {
+                        budgetText = "Daily Budget: -";
+                    }
+                    txtBudgetSummary.setText(budgetText);
+
+                    }, throwable -> {
+                        Log.e("TAG", "Error occurred: " + throwable.getMessage());
+                    });
 
     }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white_to_black">#FF000000</color>
+    <color name="lightOrange_to_orange">#ffa500</color>
+    <color name="black_to_orange">#ffa500</color>
+    <color name="peach_to_terracotta">#E67E22</color>
+    <color name="black_to_terracotta">#E67E22</color>
+
+
+</resources>

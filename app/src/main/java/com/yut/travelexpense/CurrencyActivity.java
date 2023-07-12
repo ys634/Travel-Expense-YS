@@ -48,19 +48,16 @@ public class CurrencyActivity extends AppCompatActivity {
             String src = intent.getStringExtra("src");
 
             if (src.equals("entryFragment")) {
-//                Double amount = intent.getDoubleExtra("amount", 0);
-//                String date = intent.getStringExtra("date");
-//                String description = intent.getStringExtra("description");
 
                 adapter = new CurrencyRecViewAdapter(this, currencyModels, src);
-
-            } else if (src.equals("addTrip")) {
-                String name = intent.getStringExtra("name");
-                String startDate = intent.getStringExtra("startDate");
-                String endDate = intent.getStringExtra("endDate");
-                Double budget = intent.getDoubleExtra("budget", 0);
-
-                adapter = new CurrencyRecViewAdapter(this, currencyModels, src, name, startDate, endDate, budget);
+//
+//            } else if (src.equals("addTrip")) {
+//                String name = intent.getStringExtra("name");
+//                String startDate = intent.getStringExtra("startDate");
+//                String endDate = intent.getStringExtra("endDate");
+//                Double budget = intent.getDoubleExtra("budget", 0);
+//
+//                adapter = new CurrencyRecViewAdapter(this, currencyModels, src, name, startDate, endDate, budget);
 
             }
 
@@ -135,17 +132,17 @@ public class CurrencyActivity extends AppCompatActivity {
 
         Intent intentSending;
 
-        if (src.equals("addTrip")) {
-            intentSending = new Intent(this, AddTripActivity.class);
-            intentSending.putExtra("action", "continue");
-            intentSending.putExtra("name", intent.getStringExtra("name"));
-            intentSending.putExtra("startDate", intent.getStringExtra("startDate"));
-            intentSending.putExtra("endDate", intent.getStringExtra("endDate"));
-            intentSending.putExtra("budget", intent.getStringExtra("budget"));
-
-            intentSending.putExtra("homeCurrency", tempTrip.getHomeCurrency());
-            startActivity(intentSending);
-        } else if (src.equals("entryFragment")) {
+//        if (src.equals("addTrip")) {
+//            intentSending = new Intent(this, AddTripActivity.class);
+//            intentSending.putExtra("action", "continue");
+//            intentSending.putExtra("name", intent.getStringExtra("name"));
+//            intentSending.putExtra("startDate", intent.getStringExtra("startDate"));
+//            intentSending.putExtra("endDate", intent.getStringExtra("endDate"));
+//            intentSending.putExtra("budget", intent.getStringExtra("budget"));
+//
+//            startActivity(intentSending);
+//        } else if (src.equals("entryFragment")) {
+        if (src.equals("entryFragment")) {
             intentSending = new Intent(this, MainActivity.class);
             startActivity(intentSending);
         }

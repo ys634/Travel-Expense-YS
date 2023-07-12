@@ -12,7 +12,10 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="fontFamily">@font/andika</item>
+
     </style>
+
 
     <style name="categories_button">
         <item name="android:layout_width">0dp</item>

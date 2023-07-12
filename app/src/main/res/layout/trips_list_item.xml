@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="10dp"
         android:elevation="10dp"
-        app:strokeColor="@color/black"
+        app:strokeColor="@color/black_to_terracotta"
         app:strokeWidth="1dp"
         app:cardCornerRadius="20dp">
 
@@ -27,13 +27,13 @@
                 android:id="@+id/relativeLayout"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:background="@color/peach_orange"
+                android:background="@color/peach_to_terracotta"
                 app:layout_constraintBottom_toTopOf="@+id/guideline5"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0">
+                app:layout_constraintVertical_bias="0.0">
 
                 <TextView
                     android:id="@+id/txtTripName"
@@ -49,21 +49,19 @@
                     android:id="@+id/icDelete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_delete"
-                    android:layout_marginEnd="20dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    />
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/ic_delete" />
 
                 <ImageView
                     android:id="@+id/icEdit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_edit"
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="20dp"
-                    android:layout_toLeftOf="@id/icDelete"/>
-
+                    android:layout_toLeftOf="@id/icDelete"
+                    android:src="@drawable/ic_edit" />
 
 
             </RelativeLayout>
@@ -79,39 +77,26 @@
                 android:id="@+id/txtDuration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawablePadding="3dp"
                 android:text="1/1-1/31"
-                android:textSize="16sp"
-                android:drawablePadding="3dp"
 
-                app:layout_constraintBottom_toTopOf="@+id/txtCurrency"
-                app:layout_constraintStart_toStartOf="@+id/txtCurrency"
-                app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-                app:drawableLeftCompat="@drawable/ic_calendar" />
-
-            <TextView
-                android:id="@+id/txtCurrency"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="USD"
                 android:textSize="16sp"
-                android:drawablePadding="3dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:drawableLeftCompat="@drawable/ic_calendar"
+                app:layout_constraintBottom_toTopOf="@+id/txtBudget"
                 app:layout_constraintStart_toStartOf="@+id/guideline7"
-                app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-                app:drawableTint="@color/black"
-                app:drawableLeftCompat="@drawable/ic_fees" />
+                app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
 
             <TextView
                 android:id="@+id/txtBudget"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:drawablePadding="3dp"
                 android:text="$3000"
                 android:textSize="16sp"
-                android:drawablePadding="3dp"
+                app:drawableLeftCompat="@drawable/ic_wallet"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/txtDuration"
-                app:layout_constraintTop_toBottomOf="@+id/txtCurrency"
-                app:drawableLeftCompat="@drawable/ic_wallet" />
+                app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline7"
@@ -119,6 +104,16 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 app:layout_constraintGuide_percent="0.12" />
+
+            <TextView
+                android:id="@+id/txtCountriesVisited"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mexico, Costa Rica, Nicaragua"
+                app:drawableLeftCompat="@drawable/ic_airplane"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/txtBudget"
+                app:layout_constraintTop_toBottomOf="@+id/txtBudget" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>

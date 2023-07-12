@@ -1,5 +1,7 @@
 package com.yut.travelexpense;
 
+import static com.yut.travelexpense.Utils.round;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -29,11 +31,6 @@ public class CurrencyRecViewAdapter extends RecyclerView.Adapter<CurrencyRecView
     String startDate;
     String endDate;
     Double budget;
-
-    Double amount;
-    String date;
-    String description;
-
 
     public CurrencyRecViewAdapter(Context context, ArrayList<CurrencyModel> currencyModels,
                                   String src, String name, String startDate, String endDate,
@@ -71,9 +68,14 @@ public class CurrencyRecViewAdapter extends RecyclerView.Adapter<CurrencyRecView
     public void onBindViewHolder(@NonNull CurrencyRecViewAdapter.MyViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: Called");
         CurrencyModel currencySelected = currencyModels.get(position);
+        String conversion = Utils.getInstance(context).getHomeCurrency().getSymbol() + "1 ≈ " +
+                currencySelected.getShortName() +
+                round(Utils.getInstance(context).getMultiplier(currencySelected.getShortName()), 5);
+
         holder.txtCurrencyShort.setText(currencySelected.getShortName());
         holder.txtCurrencyFull.setText(currencyModels.get(position).getFullName());
         holder.txtCurrencySymbol.setText(currencyModels.get(position).getSymbol());
+        holder.txtRate.setText(conversion);
 
 
 
@@ -82,7 +84,6 @@ public class CurrencyRecViewAdapter extends RecyclerView.Adapter<CurrencyRecView
             public void onClick(View view) {
 
                 if (src.equals("addTrip")) {
-                    Utils.getInstance(context).putHomeCurrency(currencySelected);
                     Intent intent = new Intent(context, AddTripActivity.class);
                     intent.putExtra("action", "continue");
                     intent.putExtra("name", name);
@@ -97,6 +98,7 @@ public class CurrencyRecViewAdapter extends RecyclerView.Adapter<CurrencyRecView
 
                     Toast.makeText(context, currencyModels.get(holder.getAdapterPosition()).getFullName() + " Selected", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(context, MainActivity.class);
+                    intent.putExtra("action", "continue");
                     context.startActivity(intent);
                 } else {
                     Toast.makeText(context, "Something wrong in CurrencyRecViewAdapter", Toast.LENGTH_SHORT).show();
@@ -148,7 +150,7 @@ public class CurrencyRecViewAdapter extends RecyclerView.Adapter<CurrencyRecView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txtCurrencyShort, txtCurrencyFull, txtCurrencySymbol;
+        TextView txtCurrencyShort, txtCurrencyFull, txtCurrencySymbol, txtRate;
         ConstraintLayout currencyParent;
 
         public MyViewHolder(@NonNull View itemView) {
@@ -157,6 +159,7 @@ public class CurrencyRecViewAdapter extends RecyclerView.Adapter<CurrencyRecView
             txtCurrencyShort = itemView.findViewById(R.id.txtCurrencyShort);
             txtCurrencyFull = itemView.findViewById(R.id.txtCurrencyFull);
             txtCurrencySymbol = itemView.findViewById(R.id.txtCurrencySymbol);
+            txtRate = itemView.findViewById(R.id.txtRate);
             currencyParent = itemView.findViewById(R.id.currencyParent);
         }
     }

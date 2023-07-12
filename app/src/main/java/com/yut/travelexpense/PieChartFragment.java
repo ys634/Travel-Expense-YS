@@ -72,7 +72,7 @@ public class PieChartFragment extends Fragment {
 
             for (Transaction t: transactions) {
                 String category = t.getCategory();
-                double amount = t.getOriginalAmount();
+                double amount = Utils.getInstance(getContext()).convertToHomeCurrency(t.getOriginalAmount(), t.getCurrency(), 2);
 
                 boolean groupExists = false;
                 for (NameAmountStatsModel s: groups) {

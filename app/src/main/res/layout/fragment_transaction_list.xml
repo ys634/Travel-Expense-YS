@@ -12,25 +12,47 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/txtNoTransaction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="No transaction recorded. \nAdd your first one by tapping the button!"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.71"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.75" />
+
+        <ImageView
+            android:id="@+id/imgDownArrow"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_downarrow"
+            app:layout_constraintEnd_toEndOf="@+id/txtNoTransaction"
+            app:layout_constraintTop_toBottomOf="@+id/txtNoTransaction"
+            app:tint="@color/grey" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_margin="20dp"
-        app:backgroundTint="@color/topaz"
+        app:backgroundTint="@color/peach_to_terracotta"
         android:elevation="6dp"
         android:src="@drawable/ic_add"/>
 
-    <TextView
-        android:id="@+id/txtNoTransaction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_marginTop="15dp"
-        android:padding="5dp"
-        android:visibility="gone"
-        android:text="No transaction recorded. \nAdd your first one by tapping the button on the bottom!"/>
+
 
 
 </FrameLayout>

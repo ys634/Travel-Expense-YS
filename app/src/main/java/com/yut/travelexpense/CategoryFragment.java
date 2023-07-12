@@ -36,35 +36,40 @@ public class CategoryFragment extends Fragment {
         rrGroupCategories = view.findViewById(R.id.rrAllIcons);
 
 
-        if (noOfCat <= 8) {
-            RadioButton radioButton9 = view.findViewById(R.id.radioBtn9);
-            RadioButton radioButton10 = view.findViewById(R.id.radioBtn10);
-            RadioButton radioButton11 = view.findViewById(R.id.radioBtn11);
-            RadioButton radioButton12 = view.findViewById(R.id.radioBtn12);
-
-            radioButton9.setVisibility(View.GONE);
-            radioButton10.setVisibility(View.GONE);
-            radioButton11.setVisibility(View.GONE);
-            radioButton12.setVisibility(View.GONE);
-        }
+//        if (noOfCat <= 8) {
+//            RadioButton radioButton9 = view.findViewById(R.id.radioBtn9);
+//            RadioButton radioButton10 = view.findViewById(R.id.radioBtn10);
+//            RadioButton radioButton11 = view.findViewById(R.id.radioBtn11);
+//            RadioButton radioButton12 = view.findViewById(R.id.radioBtn12);
+//
+//            radioButton9.setVisibility(View.GONE);
+//            radioButton10.setVisibility(View.GONE);
+//            radioButton11.setVisibility(View.GONE);
+//            radioButton12.setVisibility(View.GONE);
+//        }
 
         ArrayList<Integer> btnIDs = new ArrayList<>();
 
-        for (int i = 0; i < noOfCat; i++) {
+        for (int i = 0; i < 12; i++) {
             int j = i + 1;
             String btnName = "radioBtn" + j;
-
             int btnID = this.getResources().getIdentifier(btnName, "id", getActivity().getPackageName());
 
             btnIDs.add(btnID);
 
             RadioButton radioButton = (RadioButton) view.findViewById(btnIDs.get(i));
-            radioButton.setText(categories.get(i).getName());
-            radioButton.setCompoundDrawablesWithIntrinsicBounds(null,
-                    ResourcesCompat.getDrawable(getResources(), categories.get(i).getImageURL(), null),
-                    null,
-                    null);
 
+            if (i < noOfCat) {
+
+                radioButton.setText(categories.get(i).getName());
+                radioButton.setCompoundDrawablesWithIntrinsicBounds(null,
+                        ResourcesCompat.getDrawable(getResources(), categories.get(i).getImageURL(), null),
+                        null,
+                        null);
+
+            } else {
+                radioButton.setVisibility(View.GONE);
+            }
         }
 
         cardCategory.setOnClickListener(new View.OnClickListener() {

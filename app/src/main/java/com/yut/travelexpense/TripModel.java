@@ -15,19 +15,17 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
     private LocalDate endDate;
     private Double budget;
     private int id;
-    private CurrencyModel homeCurrency;
     private ArrayList<Transaction> transactions;
     private boolean isCurrentTrip;
     private boolean isOngoing;
 
     public TripModel(String name, LocalDate startDate, LocalDate endDate, Double budget, int id,
-                     CurrencyModel homeCurrency, ArrayList<Transaction> transactions, boolean isCurrentTrip, boolean isOngoing) {
+                     ArrayList<Transaction> transactions, boolean isCurrentTrip, boolean isOngoing) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.budget = budget;
         this.id = id;
-        this.homeCurrency = homeCurrency;
         this.transactions = transactions;
         this.isCurrentTrip = isCurrentTrip;
         this.isOngoing = isOngoing;
@@ -56,7 +54,6 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
             budget = in.readDouble();
         }
         id = in.readInt();
-        homeCurrency = in.readParcelable(CurrencyModel.class.getClassLoader());
         transactions = in.createTypedArrayList(Transaction.CREATOR);
         isCurrentTrip = in.readByte() != 0;
         isOngoing = in.readByte() != 0;
@@ -115,13 +112,6 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
         this.id = id;
     }
 
-    public CurrencyModel getHomeCurrency() {
-        return homeCurrency;
-    }
-
-    public void setHomeCurrency(CurrencyModel homeCurrency) {
-        this.homeCurrency = homeCurrency;
-    }
 
 
 
@@ -175,7 +165,6 @@ public class TripModel implements Parcelable, Comparable<TripModel> {
             dest.writeDouble(budget);
         }
         dest.writeInt(id);
-        dest.writeParcelable(homeCurrency, flags);
         dest.writeTypedList(transactions);
         dest.writeByte((byte) (isCurrentTrip ? 1 : 0));
         dest.writeByte((byte) (isOngoing ? 1 : 0));

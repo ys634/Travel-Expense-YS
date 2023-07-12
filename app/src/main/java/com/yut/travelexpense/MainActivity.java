@@ -1,5 +1,9 @@
 package com.yut.travelexpense;
 
+import static com.yut.travelexpense.Utils.round;
+import static com.yut.travelexpense.Utils.today;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -10,16 +14,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+import com.hbb20.CountryCodePicker;
 import com.yut.travelexpense.CurrencyConversion.RetrofitBuilder;
 import com.yut.travelexpense.CurrencyConversion.RetrofitInterface;
 import com.yut.travelexpense.databinding.ActivityMainBinding;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -39,9 +42,6 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private Toolbar toolbar;
     private static final String TAG = "Main Activity";
-    public static final LocalDate today = LocalDate.now();
-
-    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
 
 
     @Override
@@ -50,12 +50,32 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.darkTheme:
+//                setTheme(R.style.Theme_TravelExpenseYS_Night);
+//                recreate();
+//                return true;
+//            case R.id.lightTheme:
+//                setTheme(R.style.Theme_TravelExpenseYS);
+//                recreate();
+//                return true;
+//            case R.id.changeHomeCurrency:
+//                Toast.makeText(MainActivity.this, "Working on it as well", Toast.LENGTH_SHORT).show();
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
 //        Utils.getInstance(this).clearAll();
+
+
+        boolean isUserRegistered;
+
         boolean isTripRecorded = Utils.getInstance(this).getAllTrips().size() > 0;
 
         // Run whenever category icons are messed up
@@ -77,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
             Intent intent = getIntent();
             if (intent != null) {
-                if (Objects.equals(intent.getStringExtra("src"), "country")) {
+                if (Objects.equals(intent.getStringExtra("action"), "continue")) {
                     bundle.putString("action", "continue");
                 } else {
                     bundle.putString("action", "add");
@@ -90,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
             replaceFragment(entryFragment);
 
             binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+
+                Utils.getInstance(MainActivity.this).removeOnResumeData();
 
                 switch (item.getItemId()) {
 
@@ -110,8 +132,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.statsNav:
                         replaceFragment(new StatsFragment());
                         break;
-//                case R.id.settingsNav:
-//                    break;
+                    case R.id.settingsNav:
+                        Intent intent2 = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(intent2);
+                    break;
                 }
 
 
@@ -120,7 +144,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void setUpToolBar() {
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -128,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setTitle(Utils.getInstance(this).getCurrentTrip().getName());
 
         toolbar.setOnClickListener(view -> {
+            Utils.getInstance(MainActivity.this).removeOnResumeData();
             Intent intent = new Intent(MainActivity.this, TripListActivity.class);
             startActivity(intent);
 
@@ -140,15 +168,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frameOriginal, fragment);
         fragmentTransaction.commit();
     }
-
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = new BigDecimal(Double.toString(value));
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
-    }
-
 
 
 }

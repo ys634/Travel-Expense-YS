@@ -70,8 +70,10 @@ public class NameAmountStatsRecViewAdapter extends RecyclerView.Adapter<NameAmou
                 break;
         }
 
+        String groupTotal = Utils.getInstance(context).getHomeCurrency().getSymbol() + " " +
+                String.valueOf(currentStats.getGroupTotal());
         holder.txtGroupName.setText(currentStats.getGroupName());
-        holder.txtGroupTotal.setText(String.valueOf(currentStats.getGroupTotal()));
+        holder.txtGroupTotal.setText(groupTotal);
         holder.imgGroupIcon.setImageResource(image);
 
         holder.pieChartListParent.setOnClickListener(new View.OnClickListener() {
